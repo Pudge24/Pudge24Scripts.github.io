@@ -125,18 +125,18 @@ local Button = MainTab:CreateButton({
 local Toggle = MainTab:CreateToggle({
    Name = "Loop WalkSpeed",
    CurrentValue = false,
-   Flag = "Toggle1",
+   Flag = "toggle4",
    Callback = function(CurrentValue)
       if CurrentValue then
          -- Start the loop
-         _G.loop = true
-         while _G.loop do
+         _G.loop4 = true
+         while _G.loop4 do
             game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 350
             wait(0.1) -- Adjust the wait time as needed
          end
       else
          -- Stop the loop
-         _G.loop = false
+         _G.loop4 = false
       end
    end,
 })
@@ -144,18 +144,18 @@ local Toggle = MainTab:CreateToggle({
 local Toggle = MainTab:CreateToggle({
    Name = "Loop JumpPower",
    CurrentValue = false,
-   Flag = "Toggle1",
+   Flag = "Toggle2",
    Callback = function(CurrentValue)
       if CurrentValue then
          -- Start the loop
-         _G.loop = true
+         _G.loop3 = true
          while _G.loop do
             game.Players.LocalPlayer.Character.Humanoid.JumpPower = 125
             wait(0.1) -- Adjust the wait time as needed
          end
       else
          -- Stop the loop
-         _G.loop = false
+         _G.loop3 = false
       end
    end,
 })
@@ -216,8 +216,8 @@ local Toggle = RageTab:CreateToggle({
    Flag = "Toggle1",
    Callback = function(CurrentValue)
       if CurrentValue then
-         _G.loop = true
-         while _G.loop do
+         _G.loop2 = true
+         while _G.loop2 do
             local positions = {
                Vector3.new(0, 20, 0),
                Vector3.new(90, 20, 90),
@@ -245,7 +245,7 @@ local Toggle = RageTab:CreateToggle({
             wait(0.1) -- Adding a small delay to prevent potential performance issues
          end
       else
-         _G.loop = false
+         _G.loop2 = false
       end
    end,
 })
@@ -255,11 +255,11 @@ local Toggle = RageTab:CreateToggle({
 local Toggle = RageTab:CreateToggle({
    Name = "Infinite Gadgets",
    CurrentValue = false,
-   Flag = "Toggle1",
+   Flag = "Toggle3",
    Callback = function(CurrentValue)
       if CurrentValue then
-         _G.loop = true
-         while _G.loop do
+         _G.loop1 = true
+         while _G.loop1 do
             local args = {
                Vector3.new(248.3356170654297, 30.63412857055664, -72.32396697998047),
                true
@@ -269,7 +269,7 @@ local Toggle = RageTab:CreateToggle({
             wait(0.1) -- Adding a small delay to prevent potential performance issues
          end
       else
-         _G.loop = false
+         _G.loop1 = false
       end
    end
 })
