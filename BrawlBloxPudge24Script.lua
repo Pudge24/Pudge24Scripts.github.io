@@ -10,7 +10,7 @@ local Window = Rayfield:CreateWindow({
       FileName = "Example Hub"
    },
    Discord = {
-      Enabled = false,
+      Enabled = true,
       Invite = "noinvitelink", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
    },
@@ -291,3 +291,31 @@ local Button = RageTab:CreateButton({
     end
 })
 
+local FunTab = Window:CreateTab("Fun🤣", nil)
+
+local Toggle = FunTab:CreateToggle({
+    Name = "Spam Emodzi",
+    CurrentValue = false,
+    Flag = "Toggle5",
+    Callback = function(CurrentValue)
+        if CurrentValue then
+            _G.loop10 = true
+            local pins = {
+                {PinType = "PlayerPin", PinNumber = "1"},
+                {PinType = "PlayerPin", PinNumber = "2"},
+                {PinType = "BrawlerPin", PinNumber = "1"},
+                {PinType = "BrawlerPin", PinNumber = "2"},
+                {PinType = "BrawlerPin", PinNumber = "3"}
+            }
+            while _G.loop10 do
+                for _, pin in ipairs(pins) do
+                    local args = {"DisplayPin", pin}
+                    game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvents"):WaitForChild("MainFunction"):InvokeServer(unpack(args))
+                    wait(0.3)  -- Задержка 0.5 секунды
+                end
+            end
+        else
+            _G.loop10 = false
+        end
+    end
+})
