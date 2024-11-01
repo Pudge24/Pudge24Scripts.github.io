@@ -373,7 +373,7 @@ local Toggle = ExpTab:CreateToggle({
             backpack.ShotgunAmmo.Value = 9999
             backpack.CrossbowAmmo.Value = 9999
             backpack.PepperSprayAmmo.Value = 9999
-            wait(0.5)
+            wait(0.3)
          end
       else
          -- Stop the loop
@@ -397,6 +397,28 @@ end
 callInteractRemotes()
 end
 })
+
+local Toggle = ExpTab:CreateToggle({
+    Name = "Delete Bear Traps",
+    CurrentValue = false,
+    Flag = "toggle5",
+    Callback = function(CurrentValue)
+        if CurrentValue then
+            _G.loop5 = true
+            while _G.loop5 do
+                for _, object in pairs(workspace:GetDescendants()) do
+                    if object:IsA("Part") and object.Name == "Close" then
+                        object:Destroy()
+                    end
+                end
+                wait(1) -- Добавляем небольшую задержку, чтобы избежать зависания
+            end
+        else
+            _G.loop5 = false
+        end
+    end
+})
+
 
 --EXPLOITS TAB
 --zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
@@ -485,3 +507,4 @@ HighlightLib.HighlightModel("Granny", Color3.fromRGB(255, 0, 0), Color3.fromRGB(
     end)
  end
 })
+
