@@ -116,7 +116,7 @@ end
 
 
 local Window = Rayfield:CreateWindow({
-    Name = "ðŸ‘µ Granny secret script pudge24 ft. Remote Spy prod. DEX ðŸ‘µ ",
+    Name = "👵 Granny secret script pudge24 ft. Remote Spy prod. DEX 👵 ",
     LoadingTitle = "Granny Altushka Skibidi Podlivushka",
     LoadingSubtitle = "by Pudge24",
     ConfigurationSaving = {
@@ -131,7 +131,7 @@ local Window = Rayfield:CreateWindow({
     },
     KeySystem = true, -- Set this to true to use our key system
     KeySettings = {
-       Title = "Key in the discord channel(Ð¼Ð¾Ð¸-ÑÐºÑ€Ð¸Ð¿Ñ‚Ñ‹)",
+       Title = "Key in the discord channel(мои-скрипты)",
        Subtitle = "Key System",
        Note = "discord.gg/Fp7PfV7Tav",
        FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
@@ -141,7 +141,7 @@ local Window = Rayfield:CreateWindow({
     }
  })
 
- local MainTab = Window:CreateTab("MainðŸ ", nil) -- Title, Image
+ local MainTab = Window:CreateTab("Main🏠", nil) -- Title, Image
  local MainSection = MainTab:CreateSection("Main")
 
  
@@ -223,7 +223,7 @@ local Button = MainTab:CreateButton({
    end
 })
 
-local ExpTab = Window:CreateTab("ExploitsðŸ˜®", nil) -- Title, Image
+local ExpTab = Window:CreateTab("Exploits😮", nil) -- Title, Image
 local MainSection1 = ExpTab:CreateSection("Main Exploits")
 
 local Toggle = ExpTab:CreateToggle({
@@ -249,7 +249,7 @@ local Toggle = ExpTab:CreateToggle({
            
            while true do
                removeGranny()
-               wait(20) -- Ð–Ð´ÐµÐ¼ 20 ÑÐµÐºÑƒÐ½Ð´ Ð¿ÐµÑ€ÐµÐ´ ÑÐ»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ð¼ ÑƒÐ´Ð°Ð»ÐµÐ½Ð¸ÐµÐ¼
+               wait(20) -- Ждем 20 секунд перед следующим удалением
            end           
          end
       else
@@ -284,7 +284,7 @@ local Toggle = ExpTab:CreateToggle({
            
            while true do
                removeSlendrinaMother()
-               wait(20) -- Ð–Ð´ÐµÐ¼ 20 ÑÐµÐºÑƒÐ½Ð´ Ð¿ÐµÑ€ÐµÐ´ ÑÐ»ÐµÐ´ÑƒÑŽÑ‰Ð¸Ð¼ ÑƒÐ´Ð°Ð»ÐµÐ½Ð¸ÐµÐ¼
+               wait(20) -- Ждем 20 секунд перед следующим удалением
            end                        
          end
       else
@@ -306,13 +306,13 @@ sound.Parent = game.ReplicatedStorage
 local Button = ExpTab:CreateButton({
     Name = "Show Generation Seed",
     Callback = function()
-        -- ÐÐ°Ð¹Ñ‚Ð¸ Ð¸ Ð²Ð¾ÑÐ¿Ñ€Ð¾Ð¸Ð·Ð²ÐµÑÑ‚Ð¸ Ð·Ð²ÑƒÐº
+        -- Найти и воспроизвести звук
         local sound = game.ReplicatedStorage:FindFirstChild("ButtonClickSound")
         if sound then
             sound:Play()
         end
 
-        -- ÐÐ°Ð¹Ñ‚Ð¸ Ð¿Ñ€ÐµÑÐµÑ‚ Ð¸ Ð²Ñ‹Ð²ÐµÑÑ‚Ð¸ ÐµÐ³Ð¾ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ
+        -- Найти пресет и вывести его название
         local foundPresetName = "None"
         for _, presetName in ipairs(presets) do
             local preset = workspace:FindFirstChild(presetName, true)
@@ -348,7 +348,7 @@ local Toggle = ExpTab:CreateToggle({
                end
            end
            
-           -- Ð’Ñ‹Ð·Ð¾Ð² Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸
+           -- Вызов функции
            findAndTriggerRemoteEvent()       
            wait(0.1)
          end
@@ -393,7 +393,7 @@ local Button = ExpTab:CreateButton({
     end
 end
 
--- ÐŸÑ€Ð¸Ð¼ÐµÑ€ Ð²Ñ‹Ð·Ð¾Ð²Ð° Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸
+-- Пример вызова функции
 callInteractRemotes()
 end
 })
@@ -422,7 +422,7 @@ end
 --zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
 
 
- local VsTab = Window:CreateTab("VisulsðŸ˜Ž", nil) -- Title, Image
+ local VsTab = Window:CreateTab("Visuls😎", nil) -- Title, Image
  local MonsterVSSection = VsTab:CreateSection("Enemy ESP")
  
  local Button = VsTab:CreateButton({
