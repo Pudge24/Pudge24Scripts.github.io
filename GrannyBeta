@@ -131,7 +131,7 @@ local Window = Rayfield:CreateWindow({
     },
     KeySystem = true, -- Set this to true to use our key system
     KeySettings = {
-       Title = "Key in the discord channel(мои-скрипты)",
+       Title = "Key in the discord channel(scripts-key)",
        Subtitle = "Key System",
        Note = "discord.gg/Fp7PfV7Tav",
        FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
