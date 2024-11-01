@@ -1,0 +1,140 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Garden Mayhem secret script pudge24",
+    LoadingTitle = "PVZ KUSOK GOVNA",
+    LoadingSubtitle = "by Pudge24",
+    ConfigurationSaving = {
+       Enabled = true,
+       FolderName = "Pudger24Hub", -- Create a custom folder for your hub/game
+       FileName = "PVZ_ROBLOX"
+    },
+    Discord = {
+       Enabled = true,
+       Invite = "Fp7PfV7Tav", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+    },
+    KeySystem = true, -- Set this to true to use our key system
+    KeySettings = {
+       Title = "Key in the discord channel(мои-скрипты)",
+       Subtitle = "Key System",
+       Note = "discord.gg/Fp7PfV7Tav",
+       FileName = "Key", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+       GrabKeyFromSite = false, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+       Key = {"6L1oYX1C0K2HkP7j"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+    }
+ })
+
+ local MainTab = Window:CreateTab("Main", nil) -- Title, Image
+ local MainSection = MainTab:CreateSection("Main")
+
+ 
+ local Slider = MainTab:CreateSlider({
+   Name = "WalkSpeed Slider",
+   Range = {1, 350},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderws", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+   end,
+})
+
+
+local Input = MainTab:CreateInput({
+   Name = "Walkspeed",
+   PlaceholderText = "1-500",
+   RemoveTextAfterFocusLost = true,
+   Callback = function(Text)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Text)
+   end,
+})
+
+local Button = MainTab:CreateButton({
+   Name = "Reset Speed",
+   Callback = function()
+   game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (10)
+   end,
+})
+
+
+local Toggle = MainTab:CreateToggle({
+   Name = "Loop WalkSpeed",
+   CurrentValue = false,
+   Flag = "toggle4",
+   Callback = function(CurrentValue)
+      if CurrentValue then
+         -- Start the loop
+         _G.loop4 = true
+         while _G.loop4 do
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 55
+            wait(0.1) -- Adjust the wait time as needed
+         end
+      else
+         -- Stop the loop
+         _G.loop4 = false
+      end
+   end,
+})
+
+
+
+
+local OtherSection = MainTab:CreateSection("Other")
+
+
+
+
+local Button = MainTab:CreateButton({
+   Name = "Infinite Yield",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+   end,
+})
+
+local ExpTab = Window:CreateTab("Exploits", nil) -- Title, Image
+local Button = ExpTab:CreateButton({
+    Name = "Get all units and helpers",
+    Callback = function()
+    local stats = {
+        "ChompVine",
+        "Frozen Tomato",
+        "Ghost-Shroom",
+        "Gloom-Sprout",
+        "Granate-Cannon",
+        "Gyroot",
+        "IceSeed-Shooter",
+        "Icy-Onion",
+        "Ilumily",
+        "Mango-Thrower",
+        "Parasite-Shroom",
+        "Pop-Shroom",
+        "Sailor Spinach",
+        "Seed-Shooter",
+        "Stinger",
+        "StomPear",
+        "Triple-Grape"
+    }
+    
+    for _, stat in ipairs(stats) do
+        local playerStat = game:GetService("Players").LocalPlayer.Stats[stat]
+        if playerStat then
+            playerStat.Value = 1
+        end
+    end
+    
+    local player = game:GetService("Players").LocalPlayer
+    local stats = player.Stats
+    
+    stats.TangledInv.Value = 999999999
+    stats.BlocktatoInv.Value = 9999999
+    stats.SpikeyInv.Value = 9999999
+    stats.PyraFlowerInv.Value = 9999999
+    stats.PrimShineInv.Value = 9999999
+    stats.PepperInv.Value = 9999999
+    stats.LaylaInv.Value = 999999
+    stats.CloudBerryInv.Value = 9999999
+end
+})
