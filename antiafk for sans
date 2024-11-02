@@ -1,0 +1,51 @@
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local targetMorphPad = workspace:WaitForChild("Lobby")
+                        :WaitForChild("MainLobby")
+                        :WaitForChild("CharacterMorphs")
+                        :WaitForChild("UndyneMorph")
+                        :WaitForChild("MorphPad")
+
+local targetSpawnLocation = workspace:WaitForChild("Lobby")
+                            :WaitForChild("MainLobby")
+                            :WaitForChild("SpawnLocation")
+
+-- Телепортация к MorphPad
+character:SetPrimaryPartCFrame(targetMorphPad.CFrame)
+print("Телепортирован к MorphPad")
+
+-- Задержка перед телепортацией к SpawnLocation
+wait(2) -- Задержка в 2 секунды
+print("Задержка завершена")
+
+-- Телепортация немного выше SpawnLocation
+local offset = Vector3.new(0, 5, 0) -- Смещение на 5 единиц вверх
+character:SetPrimaryPartCFrame(targetSpawnLocation.CFrame + offset)
+print("Телепортирован к SpawnLocation с смещением")
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local targetMorphPad = workspace:WaitForChild("Lobby")
+                        :WaitForChild("MainLobby")
+                        :WaitForChild("CharacterMorphs")
+                        :WaitForChild("UndyneMorph")
+                        :WaitForChild("MorphPad")
+
+local targetSpawnLocation = workspace:WaitForChild("Lobby")
+                            :WaitForChild("MainLobby")
+                            :WaitForChild("SpawnLocation")
+
+-- Телепортация к MorphPad
+character:SetPrimaryPartCFrame(targetMorphPad.CFrame)
+print("Телепортирован к MorphPad")
+
+-- Задержка перед телепортацией к SpawnLocation
+wait(2) -- Задержка в 2 секунды
+print("Задержка завершена")
+
+-- Телепортация немного выше SpawnLocation
+local offset = Vector3.new(0, 5, 0) -- Смещение на 5 единиц вверх
+character:SetPrimaryPartCFrame(targetSpawnLocation.CFrame + offset)
+print("Телепортирован к SpawnLocation с смещением")
