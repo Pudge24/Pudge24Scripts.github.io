@@ -1,0 +1,1216 @@
+ 
+if game.PlaceId ~= 14339696091 then
+    return nil
+end
+
+
+getgenv().Get = setmetatable({}, {__index = function(Self, Idx) return game:GetService(Idx) end})
+
+getgenv().Toggles = {
+    Farm = false,
+    KillAura = false,
+    MobAura = false,
+    AutoRoll = false,
+    FarmBoss = false,
+    BreakBarrier = false,
+    Hidden = false
+}
+
+getgenv().FarmSettings = {
+    AuraDistance = 6,
+    FarmDistance = 3,
+    KillPlayers = true,
+    SelectedQuest = nil,
+    LeaveOnMod = true
+}
+
+getgenv().AuraSettings = {
+    PunchSpeed = 0.15,
+    KillDistance = 12,
+    Mode = "Punch (Lowest 150ms)"
+}
+
+
+getgenv().RollSettings = {
+    Amount = 25,
+    Threshold = 15,
+    Store = false,
+    Hide = false,
+    Luck = false,
+    LuckMode = "Lucky"
+}
+
+getgenv().UpgradeSettings = {
+    Threshold = 5,
+    IgnoreUpgraded = false
+}
+
+
+local Players = Get.Players
+local Player = Players.LocalPlayer
+local Workspace = Get.Workspace
+local RunService = Get.RunService
+local Rep = Get.ReplicatedStorage
+local HttpService = Get.HttpService
+local TeleportService = Get.TeleportService
+local VirtualInputManager = Get.VirtualInputManager
+
+local groupId = 15508585
+local privilegeThreshold = 150
+
+-- local function Save(File, Table)
+--     if (makefolder and isfolder) then
+--         pcall(function()
+--             if not isfolder("MUVF") then
+--                 makefolder("MUVF")
+--                 print("Folder created: " .. "MUVF")
+--             end
+--         end)
+--     end
+    
+
+--     if (writefile) then
+--         local json = HttpService:JSONEncode(Table)
+--         writefile("MUVF/UU_"..File..".txt", json)
+--     else
+--         print("Saving Not Supported")
+--     end
+-- end
+
+-- local function Load(File)
+--     if not (readfile and isfile and isfolder) then
+--         print("Loading Not Supported")
+--         --File Reading Not supported
+--         return
+--     end
+
+--     pcall(function()
+--         if isfile("MUVF/UU_"..File..".txt") then
+--             print("Found File")
+--             local Table = HttpService:JSONDecode(readfile("MUVF/UU_"..File..".txt"))
+--             print("Settings Loaded")
+--             return(Table)
+--         end
+--     end) 
+-- end
+
+local function Save(File, Table)
+    if (writefile) then
+        local json = HttpService:JSONEncode(Table)
+        writefile("UU_"..File..".txt", json)
+    else
+        print("Saving Not Supported")
+    end
+end
+
+local function Load(File)
+    if not (readfile and isfile) then
+        print("Loading Not Supported")
+        --File Reading Not supported
+        return
+    end
+    if isfile("UU_"..File..".txt") then
+        print("Found File")
+        Table = HttpService:JSONDecode(readfile("UU_"..File..".txt"))
+        print("Settings Loaded")
+        return(Table)
+    end
+end
+
+local getUserData = function() return getupvalue(getconnections(Player.PlayerGui.MainClient.Equipped.Relic.enhance.MouseButton1Click)[1].Function, 4) end
+
+
+getgenv().AbilityDict = {}
+local RerollPath = Player.PlayerGui.Reroll
+local AbilityList = {}
+
+
+AbilityDict = Load("AbilityFilter")
+for i, v in pairs(RerollPath.Prompt.Prompt.ScrollingFrame:GetChildren()) do
+    if v:IsA("TextButton") then
+        table.insert(AbilityList, v.Name)
+        if not (AbilityDict[v.Name]) then
+            AbilityDict[v.Name] = 0
+        end
+    end
+end
+
+Toggles = Load("Toggles")
+AuraSettings = Load("AuraSettings")
+RollSettings = Load("RollSettings")
+FarmSettings = Load("FarmSettings")
+UpgradeSettings = Load("UpgradeSettings")
+
+local VirtualUser = game:service'VirtualUser'
+game:service'Players'.LocalPlayer.Idled:connect(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new())
+end)
+
+
+local Old = getsenv(Player.PlayerScripts.MoveHandler)
+
+hookfunction(Old.camshake, function()
+    return
+end)
+
+hookfunction(Old._G.knockback, function()
+    return
+end)
+
+hookfunction(Old._G.HitEffect, function()
+    return
+end)
+hookfunction(Old._G.flasheffect, function()
+    return
+end)
+
+hookfunction(Old.addparticle, function()
+    return
+end)
+
+local MobList = {}
+for i, v in pairs(require(Workspace.EnemyStats)) do
+    table.insert(MobList, i) --append name to list
+end
+
+
+local function activateAbility()
+    local args = {[1] = false} 
+    Rep.ToggleAbility:InvokeServer(unpack(args))
+end
+
+local function check(e)
+    local script = Player.PlayerGui.MainClient.LocalScript
+    if getfenv(e) and getfenv(e).script and getfenv(e).script.Name and getfenv(e).script == script then
+        return true
+    else
+        return false
+    end
+end
+
+local function getDistanceTo(object, yOverride) 
+    local objectPosition = object:GetModelCFrame().Position
+    if(yOverride) then
+        objectPosition = Vector3.new(objectPosition.x, yOverride, objectPosition.z)
+    end
+    return (Player.Character.HumanoidRootPart.Position - objectPosition).Magnitude
+end
+
+local function getNearestMobs(Type)
+    local LowestDistance = math.huge
+    local Target
+    for i, v in ipairs(Workspace:GetChildren()) do
+        if v:IsA("Model")  then
+            if Toggles.Farm then
+                if not(table.find(Type, v.Name)) then
+                    continue
+                end
+            elseif Toggles.MobAura then
+                if not(table.find(MobList, v.Name)) then
+                    continue
+                end
+            elseif Toggles.KillAura then
+                if not(v:FindFirstChildWhichIsA("Humanoid")) or v.Name == Player.Name then
+                    continue
+                end
+            end
+            
+            local Enemy = v:FindFirstChildWhichIsA("Humanoid")
+            if Enemy and Enemy.Health ~= 0 then
+                local CurrentDistance = getDistanceTo(v)
+                if CurrentDistance < LowestDistance then
+                    LowestDistance = CurrentDistance
+                    Target = v
+                end
+            end
+        end
+    end
+    return Target
+end
+
+local function getNearestObstacles(target, barrierOnly)
+    local LowestDistance = math.huge
+    local obstacle
+    for i, v in ipairs(Workspace:GetChildren()) do
+        if v:IsA("Model") and (not(table.find(MobList, v.Name)) or v.Name == "Barrier") and v.Name ~= Player.Name then
+            local Enemy = v:FindFirstChildWhichIsA("Humanoid")
+            if barrierOnly and not v.Name == "Barrier" then
+                continue
+            end
+            if Enemy and Enemy.Health ~= 0 then
+                local CurrentDistance = 0
+                if target ~= Player then
+                    CurrentDistance = (target:GetModelCFrame().Position - v:GetModelCFrame().Position).Magnitude
+                else
+                    CurrentDistance = getDistanceTo(v)
+                end
+                if CurrentDistance < LowestDistance then
+                    LowestDistance = CurrentDistance
+                    obstacle = v
+                end
+            end
+        end
+    end
+    return obstacle
+end
+
+
+local attack = nil
+local CurrentEnemy = nil
+local PunchCounter = 0
+
+local function AttackFuncGet()
+    for _,v in pairs(getgc()) do
+        if type(v) == 'function' and check(v) then
+            if(debug.getinfo(v).numparams) == 4 then
+                attack = v
+            end
+        end
+    end
+end
+
+
+local function Punch(enemy)
+    if CurrentEnemy ~= nil and CurrentEnemy == enemy then
+        PunchCounter += 1
+    else
+        CurrentEnemy = enemy
+        PunchCounter = 0
+    end
+    if PunchCounter >= 5 then
+        PunchCounter = 0
+    end
+
+
+    if attack then
+        attack(Vector3.new(AuraSettings.KillDistance, AuraSettings.KillDistance, AuraSettings.KillDistance),CFrame.new(0,0,0),6,nil)
+    else
+        AttackFuncGet()
+    end
+end
+
+local function ArbiterHit(enemy)
+    local args = {
+        [1] = "Dark Blade",
+        [2] = enemy:FindFirstChildWhichIsA("Humanoid")
+    }
+    Rep.Damage:FireServer(unpack(args))
+    Rep.Damage:FireServer(unpack(args))
+    Rep.Damage:FireServer(unpack(args))
+end
+
+-- local function ArbiterUlt(Enemy)
+--     local args = {
+--         [1] = "Dark Blade",
+--         [2] = Enemy:FindFirstChildWhichIsA("Humanoid"),
+--         [4] = {["Ultimate"] = true}
+--     }
+--     Rep.Damage:FireServer(unpack(args))
+-- end
+
+local function EnergyBlade(enemy)
+    local args = {
+        [1] = "DualSwordHeavy",
+        [2] = enemy:FindFirstChildWhichIsA("Humanoid"),
+        [3] = Player.Character.Cancellations.Value,
+        [4] = {
+            [1] = enemy:FindFirstChildWhichIsA("Humanoid")
+        }
+    }
+    Rep.Damage:FireServer(unpack(args))
+end
+
+
+
+local function hit(enemy)
+    if AuraSettings.Mode == "Punch" then
+        Punch(enemy)
+        wait(AuraSettings.PunchSpeed)
+    elseif AuraSettings.Mode == "Dark Blade (Arbiter Only)" then
+        ArbiterHit(enemy)
+        wait(AuraSettings.PunchSpeed)
+    elseif AuraSettings.Mode == "Energy Blade" then
+        EnergyBlade(enemy)
+        wait(AuraSettings.PunchSpeed)
+    end
+end
+
+
+local function quest(quest)
+    local args = {
+        [1] = quest
+    } 
+    Rep.TakeQuest:FireServer(unpack(args))
+end
+
+
+local function getQuestMobs(quest)
+    local enemyType
+    if quest == "Real Amgogus" then 
+        enemyType = {"Cripple"}
+    elseif quest == "Gaming Disorder" then 
+        enemyType = {"Crail"}
+    elseif quest == "Kingdom" then 
+        enemyType = {"Blyke", "Isen", "Remi", "Zeke"}
+    elseif quest == "Rigged Game" then 
+        enemyType = {"Arlo", "John", "Seraphina"}
+    elseif quest == "Trouble in the backrooms" then 
+        enemyType = {"Seer", "John", "Seraphina"}
+    elseif quest == "Something is in the sewers" then 
+        enemyType = {"Cultist"}
+    elseif quest == "Cooking some crossovers" then 
+        enemyType = {"Thunderclap"}
+    elseif quest == "Troubles from another timeline" then 
+        enemyType = {"Roku"}
+    elseif quest == "From another world" then 
+        enemyType = {"Otherworlders"}
+    elseif quest == "Ultra Fair" then 
+        enemyType = {"God"}
+    end
+    return(enemyType)
+end
+
+local function getOffsetVector(enemy)
+    local Vector = Player.Character.HumanoidRootPart.Position - enemy:GetModelCFrame().Position
+    local Distance = Vector.Magnitude
+    local Normal = Vector3.new(Vector.x/Distance, Vector.y/Distance, Vector.z/Distance)
+    local Offset = Normal * FarmSettings.FarmDistance
+    local NewPosition = enemy:GetModelCFrame().Position + Offset
+    return NewPosition
+end
+
+local B = Workspace:FindFirstChild("BossSpawns") --Get enemy names and stats
+local BossList = {}
+local BossPosition = nil
+for i, v in pairs(B:GetChildren()) do
+    if (BossPosition == nil) then
+        BossPosition = v.CFrame.Position
+    end
+    table.insert(BossList, v.Name) --append name to list
+end
+
+
+local BossFight = false
+
+
+local function getBoss()
+    for i, v in ipairs(Workspace:GetChildren()) do
+        if v:IsA("Model") and table.find(BossList , v.Name) then
+            if (v:GetModelCFrame().Position - BossPosition).Magnitude < 30 then
+                return v
+            end
+        end
+    end    
+end
+
+
+local function BossFarm()
+    pcall(function()
+        local Boss = getBoss()
+
+        if (FarmSettings.Hidden) then
+            local target = Vector3.new(Boss:GetModelCFrame().Position.x, Boss:GetModelCFrame().Position.y - FarmSettings.FarmDistance, Boss:GetModelCFrame().Position.z)
+            Player.Character:MoveTo(target)
+        end
+
+        while Boss and Boss.Humanoid.Health > 0 and Toggles.FarmBoss do
+            if not Player.Character:FindFirstChild("Head"):FindFirstChild("LeftGlow") then
+                activateAbility()
+            end
+
+            local currentDistance = 0
+            if FarmSettings.Hidden then
+                currentDistance = getDistanceTo(Boss, Boss:GetModelCFrame().Position.y - FarmSettings.FarmDistance)
+            else
+                currentDistance = getDistanceTo(Boss)
+            end
+            
+            if currentDistance < FarmSettings.FarmDistance then
+                hit(Boss)
+            else 
+                Player.Character.Humanoid:MoveTo(getOffsetVector(Boss))
+                wait(0.1)
+            end
+
+            if Toggles.BreakBarrier then
+                local Barrier = getNearestObstacles(Boss, true)
+                if getDistanceTo(Barrier) < FarmSettings.FarmDistance  then
+                    hit(Barrier)
+                end
+            end
+        end
+    end)
+    Player.Character:MoveTo(Vector3.new(Player.Character.HumanoidRootPart.Position.x, Player.Character.HumanoidRootPart.Position.y, Player.Character.HumanoidRootPart.Position.z))
+    Workspace.Gravity = 196.2
+    BossFight = false
+end
+
+
+local function main()
+    while wait() do
+        pcall(function()
+            if (BossFight or Toggles.Farm) and FarmSettings.Hidden then
+                Workspace.Gravity = 0
+                pcall(function()
+                    Player.Character.HumanoidRootPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                end)
+            end
+
+            if not BossFight then
+
+                if Toggles.FarmBoss and Player.PlayerGui.Boss.Enabled == true and RerollPath.bosstp.Visible then
+                    if FarmSettings.Hidden then
+                        RerollPath.bosstp.Visible = false
+                    else
+                        for i,v in pairs(getconnections(RerollPath.bosstp.Yes.MouseButton1Click)) do
+                            v.Function()
+                        end
+                    end
+
+                    BossFight = true
+                    return
+                end
+
+
+                if Toggles.Farm then
+                    pcall(function()
+                        if not Player.Character:FindFirstChild("Head"):FindFirstChild("LeftGlow") then
+                            activateAbility()
+                        end
+
+                        if not Player.PlayerGui.MainClient.Quest.visible then
+                            quest(FarmSettings.SelectedQuest)
+                        else
+                            local questCount = Player.PlayerGui.MainClient.Quest.Folder.Objective.progress.text:split("/")
+                            if questCount[1] == questCount[2] then
+                                quest("Completed")
+                            end
+                        end
+            
+                        local enemyType = getQuestMobs(FarmSettings.SelectedQuest)
+                        local enemy = getNearestMobs(enemyType)
+                        
+                        local currentDistance = 0
+                        if FarmSettings.Hidden then
+                            currentDistance = getDistanceTo(enemy, enemy:GetModelCFrame().Position.y - FarmSettings.FarmDistance)
+                        else
+                            currentDistance = getDistanceTo(enemy)
+                        end
+
+                        local obstacle
+                        local enemyBarrier = false
+
+                        obstacle = getNearestObstacles(enemy, false)
+
+                        if obstacle and obstacle.Name ~= "Barrier" then
+                            if (getDistanceTo(obstacle) >= AuraSettings.KillDistance) then
+                                enemyBarrier = false
+                            end
+                        end
+                    
+
+                        if currentDistance < FarmSettings.AuraDistance then
+                            local enemyHp = enemy:FindFirstChildWhichIsA("Humanoid").Health
+                            hit(enemy)
+                            if (enemyHp - enemy:FindFirstChildWhichIsA("Humanoid").Health) == 0 then
+                                enemyBarrier = true
+                            end
+                        else
+                            if FarmSettings.Hidden then
+                                local tpPosition = Vector3.new(enemy:GetModelCFrame().Position.x, enemy:GetModelCFrame().Position.y - FarmSettings.FarmDistance, enemy:GetModelCFrame().Position.z)
+                                Player.Character:MoveTo(tpPosition)
+                            else
+                                if currentDistance >= 300 then
+                                    Player.Character:MoveTo(getOffsetVector(enemy) + Vector3.new(0, 3, 0))
+                                else
+                                    Player.Character.Humanoid:MoveTo(getOffsetVector(enemy))
+                                end
+                            end
+
+                            
+                            if FarmSettings.KillPlayers then
+                                local enemyPlayer = getNearestObstacles(Player, false)
+                                if(enemyPlayer and enemyPlayer.Name ~= "Barrier" and getDistanceTo(enemyPlayer) < AuraSettings.KillDistance ) then
+                                    hit(enemyPlayer)
+                                end
+                            end
+                        end
+
+                        if obstacle and obstacle.Name == "Barrier" and currentDistance < FarmSettings.AuraDistance and enemyBarrier then
+                            hit(obstacle)
+                        end
+                    end)
+                
+                elseif (Toggles.KillAura or Toggles.MobAura) and not Toggles.Farm then
+                    pcall(function()
+                        local enemy = getNearestMobs()
+                        if getDistanceTo(enemy) < AuraSettings.KillDistance then
+                            hit(enemy)
+                        end
+                    end)
+                end
+            else
+                BossFarm()
+            end
+        end)
+    end
+end
+
+
+local function getRolledAbilities()
+    local abilityResults = {}
+    for _i, ability in RerollPath.Rerolls.ScrollingFrame:GetChildren() do
+        if (ability.Name ~= "RollTemplate")  then
+            continue
+        end
+        for i, v in next, getconnections(ability.RollTemplate.Accept.MouseButton1Click) do
+            for i2, v2 in next, getupvalues(v.Function) do
+                if(type(v2) == "table" and v2.Ability) then
+                    local ability = {name = nil, potential = nil, accept = nil}
+                    ability.name = v2.Ability
+                    ability.potential = v2.Potential
+                    ability.accept = v.Function
+                    table.insert(abilityResults, ability)
+                end
+            end
+        end
+    end
+    return abilityResults
+end
+
+
+local function clickEndRoll() 
+    local x = RerollPath.Rerolls.X.AbsolutePosition.X + RerollPath.Rerolls.X.AbsoluteSize.X / 2
+    local y = RerollPath.Rerolls.X.AbsolutePosition.Y + RerollPath.Rerolls.X.AbsoluteSize.Y
+
+    VirtualInputManager:SendMouseButtonEvent(x, y, 0, true, game, 0)
+    VirtualInputManager:SendMouseButtonEvent(x, y, 0, false, game, 0)
+end
+
+
+
+local count = 0
+
+local function autoRoll()
+    if(Toggles.AutoRoll) then
+        count = 0
+        Rep.Reroll:InvokeServer(nil, nil, true)
+    end
+end
+
+local function toggleHideRoll()
+    if RollSettings.Hide and Toggles.AutoRoll then
+        RerollPath.Rerolls.BackgroundTransparency = 1
+        RerollPath.Rerolls.UIStroke.Enabled = false
+        RerollPath.Rerolls.ScrollingFrame.Visible = false
+        RerollPath.Rerolls.title.Visible = false
+        RerollPath.Rerolls.X.Visible = false
+        RerollPath.Rerolls.X.ZIndex = 10
+        Player.PlayerGui.Trading.Trading.ZIndex = 9
+    else
+        RerollPath.Rerolls.BackgroundTransparency = 0.5
+        RerollPath.Rerolls.UIStroke.Enabled = true
+        RerollPath.Rerolls.ScrollingFrame.Visible = true
+        RerollPath.Rerolls.title.Visible = true
+        RerollPath.Rerolls.X.ZIndex = 3
+        RerollPath.Rerolls.X.Visible = true
+        Player.PlayerGui.Trading.Trading.ZIndex = 10
+    end
+end
+
+
+RerollPath.ChildRemoved:Connect(function(child)
+    if(not Toggles.AutoRoll) then
+        return
+    end
+
+    toggleHideRoll()
+
+    if child.Name == "Finished" then
+        count = count + 1
+        if (count >= 10) then
+            count = 0
+            local rolledAbilities = getRolledAbilities()
+
+            for _i, ability in rolledAbilities do     
+                if (ability.potential >= RollSettings.Threshold) or AbilityDict[ability.name] == nil or (ability.potential >= AbilityDict[ability.name] and AbilityDict[ability.name] ~= 0) then
+
+                    RerollPath.Rerolls.BackgroundTransparency = 0.5
+                    RerollPath.Rerolls.UIStroke.Enabled = true
+                    RerollPath.Rerolls.ScrollingFrame.Visible = true
+
+                    if RollSettings.Store then
+                        ability.accept()
+                        wait(0.2)
+                    else
+                        Toggles.AutoRoll = false
+                        return
+                    end
+                end
+            end
+
+            RerollPath.Rerolls.X.ZIndex = 10
+            RerollPath.Rerolls.X.Visible = true
+            
+            repeat
+                RerollPath.Rerolls.X.Visible = true
+                wait()
+                pcall(clickEndRoll)
+                wait()
+            until not RerollPath.Rerolls.visible or not Toggles.AutoRoll
+
+            RerollPath.Rerolls.X.ZIndex = 3
+            RerollPath.Rerolls.X.Visible = not RollSettings.Hide
+
+            repeat
+                wait()
+                Rep.Reroll:InvokeServer(nil, nil, true)
+                wait()
+            until RerollPath.Rerolls.visible or not Toggles.AutoRoll
+        end
+    end
+end)
+
+
+local function massUpgrade(type, ignoreUpgraded, threshold)
+    spawn(function()
+        local validMaterials = {}
+
+        local data = {}
+        if type == "Fist" then
+            data = getUserData().Fists
+        else
+            data = getUserData().Relics
+        end
+
+        for id, fields in data do
+            if(ignoreUpgraded and fields.BaseLevel ~= fields.Level) then 
+                continue 
+            end
+            if fields.Level <= threshold then
+                table.insert(validMaterials, id)
+            end
+        end
+
+        while #validMaterials >= 4 do
+            local args = {
+                [1] = type,
+                [2] = {
+                    [1] = table.remove(validMaterials),
+                    [2] = table.remove(validMaterials),
+                    [3] = table.remove(validMaterials),
+                    [4] = table.remove(validMaterials),
+                }
+            }
+            Rep.UpgradeItem:InvokeServer(unpack(args))
+        end
+    end)
+end
+
+
+local function autoLuck()
+    if RollSettings.Luck then
+        pcall(function()
+            local data = getUserData()
+
+            if data.LastSelfGamble == nil or os.time() > data.LastSelfGamble then
+                local args = {
+                    [1] = "Self Gamble",
+                    [2] = {
+                        ["Color"] = Color3.new(1, 0.8509804010391235, 0.30980393290519714),
+                        ["Boost"] = "Ultra Lucky"
+                    }
+                }
+                
+                Rep.Remotes.SkillCast:FireServer(unpack(args))
+            end
+            
+            if data.LastGroupGamble == nil or os.time() > data.LastGroupGamble then
+                local args = {
+                    [1] = "Group Gamble",
+                    [2] = {
+                        ["Color"] = Color3.new(1, 0.8509804010391235, 0.30980393290519714),
+                        ["Boost"] = "Super Lucky",
+                        ["HitPlayers"] = {
+                            [1] = Player
+                        }
+                    }
+                }
+                
+                Rep.Remotes.SkillCast:FireServer(unpack(args))
+            end
+
+            wait(3)
+        end)
+    end
+end
+
+
+local function getServerList(placeId)
+    local servers = {}
+    local cursor = ""
+    local currentJobId = game.JobId
+
+    repeat
+        local url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100&cursor=" .. cursor
+        local response = game:HttpGet(url)
+        local data = HttpService:JSONDecode(response)
+        
+        for _, server in ipairs(data.data) do
+            if server.playing < server.maxPlayers and server.id ~= currentJobId then
+                table.insert(servers, server.id)
+            end
+        end
+        
+        cursor = data.nextPageCursor
+    until not cursor
+
+    return servers
+end
+
+local function serverHop()
+    local gameId = game.PlaceId
+    local servers = getServerList(gameId)
+    if #servers > 0 then
+        local newServerId = servers[math.random(1, #servers)]
+        print("Hopping to server: " .. newServerId)
+        TeleportService:TeleportToPlaceInstance(gameId, newServerId, Player)
+    else
+        Player:Kick("No servers found.")
+    end
+end
+
+
+local function getUserGroupRank(userId, groupId)
+    local url = "https://groups.roblox.com/v1/users/" .. userId .. "/groups/roles"
+    local response = game:HttpGet(url)
+    local data = HttpService:JSONDecode(response)
+    
+    for _, groupInfo in ipairs(data.data) do
+        if groupInfo.group.id == groupId then
+            return groupInfo.role.rank
+        end
+    end
+    
+    return nil
+end
+
+local function checkCurrentMods()
+    if FarmSettings.LeaveOnMod then
+        for index, player in Players:GetChildren() do
+            spawn(function()
+                local success, rank = pcall(getUserGroupRank, player.userId, groupId)
+                if success and rank and rank >= privilegeThreshold then
+                    print("Privileged member is here: " .. player.Name .. " with rank: " .. rank)
+                    serverHop()
+                end
+            end)
+        end
+    end
+end
+
+
+Player.CharacterAdded:Connect(function(character)
+    attack = nil
+end)
+
+
+RunService.Stepped:Connect(
+   function()
+       if Toggles.Farm or BossFight then
+           for i, v in pairs(Player.Character:GetChildren()) do
+               if v:IsA("BasePart") then
+                   v.CanCollide = false
+               end
+           end
+       end
+   end
+)
+
+
+
+Players.PlayerAdded:Connect(function(player)
+    if FarmSettings.LeaveOnMod then
+        local userId = player.UserId
+        local rank = getUserGroupRank(userId, groupId)
+        
+        if rank and rank >= privilegeThreshold then
+            print("Privileged member joined: " .. player.Name .. " with rank: " .. rank)
+            serverHop()
+        end
+    end
+    
+end)
+
+local function RelinquishCrown()
+    if not Toggles.RelinquishCrown then
+        return
+    end
+
+    local king = Workspace:WaitForChild(Player.Name).Head:FindFirstChild("King")
+    local jack = Workspace:WaitForChild(Player.Name).Head:FindFirstChild("Jack")
+    if (jack) then
+        serverHop()
+    end
+    
+    if king then
+        for _, player in Players:GetChildren() do
+            if player ~= Player then
+                Rep.SurrenderCrown:FireServer(unpack({
+                    [1] = player
+                }))
+            end
+        end
+    end
+end
+
+
+spawn(function()
+    --TitleScreen
+    pcall(function()
+        for i, v in getconnections(Player.PlayerGui.TitleScreen.Play.MouseButton1Click) do
+            v.Function()
+        end
+    end)
+   
+
+    --Execute once on Runtime
+    spawn(checkCurrentMods)
+    spawn(autoRoll)
+
+    --Execute while Running
+    while wait() do
+        spawn(autoLuck)
+        spawn(RelinquishCrown)
+    end
+end)
+    
+spawn(main)
+
+
+
+
+
+
+local UILibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/TheOnlineCat/Codes/main/Twink's%20UILib%20Modified", true))()
+
+local MainUI = UILibrary.Load("Pudge24 Ultra UnFair for fer")
+
+local PageFarm = MainUI.AddPage("Farm", false)
+    
+local FarmToggle = PageFarm.AddToggle("Auto Farm (Set Aura Hit Mode)", Toggles.Farm, function(value)
+    Toggles.Farm = value
+    Save("Toggles", Toggles)
+    if not value and FarmSettings.Hidden then
+        pcall(function()
+            Workspace.Gravity = 196.2
+            Player.Character:MoveTo(
+                Vector3.new(
+                    Player.Character.HumanoidRootPart.Position.x, 
+                    Player.Character.HumanoidRootPart.Position.y + FarmSettings.FarmDistance, 
+                    Player.Character.HumanoidRootPart.Position.z
+                )
+            )
+        end)
+    end
+end)
+
+local SliderFarmDistance = PageFarm.AddSlider("Farm Distance", {Min = 0, Max = 70, Def = FarmSettings.FarmDistance}, function(value)
+    FarmSettings.FarmDistance = value
+    Save("FarmSettings", FarmSettings)
+end)
+
+local SliderAuraDistance = PageFarm.AddSlider("Farm Aura Distance", {Min = 0, Max = 100, Def = FarmSettings.AuraDistance}, function(value)
+    FarmSettings.AuraDistance = value
+    Save("FarmSettings", FarmSettings)
+end)
+
+local KillToggle = PageFarm.AddToggle("Kill Players while Farming (Uses Kill Aura Distance)", FarmSettings.KillPlayers, function(value)
+    FarmSettings.KillPlayers = value
+    Save("FarmSettings", FarmSettings)
+end)
+
+local BossToggle = PageFarm.AddToggle("Auto Boss Kill", Toggles.FarmBoss, function(value)
+    Toggles.FarmBoss = value
+    Save("Toggles", Toggles)
+end)
+
+local TpToggle = PageFarm.AddToggle("Hidden Farm", FarmSettings.Hidden, function(value)
+    FarmSettings.Hidden = value
+    Save("FarmSettings", FarmSettings)
+    if not value and Toggles.Farm then
+        pcall(function()
+            Workspace.Gravity = 196.2
+            Player.Character:MoveTo(
+                Vector3.new(
+                    Player.Character.HumanoidRootPart.Position.x, 
+                    Player.Character.HumanoidRootPart.Position.y + FarmSettings.FarmDistance, 
+                    Player.Character.HumanoidRootPart.Position.z
+                )
+            )
+        end)
+    end
+end)
+
+local QuestSelect = PageFarm.AddDropdown("Quest Select", {
+    "Real Amgogus",
+    "Gaming Disorder",
+    "Kingdom",
+    "Rigged Game",
+    "Trouble in the backrooms",
+    "Something is in the sewers",
+    "Cooking some crossovers",
+    "Troubles from another timeline",
+	"From another world",
+    "Ultra Fair"
+    }, function(value)
+        FarmSettings.SelectedQuest = value
+        Save("FarmSettings", FarmSettings)
+end, FarmSettings.SelectedQuest)
+
+local Test = PageFarm.AddToggle("Testag Farm", FarmSettings.Test, function(value)
+    FarmSettings.Test = value
+    Save("FarmSettings", FarmSettings)
+end)
+
+local PageKillAura = MainUI.AddPage("Kill Aura", false)
+
+local KillAuraToggle = PageKillAura.AddToggle("Kill Aura", Toggles.KillAura, function(value)
+    Toggles.KillAura = value
+    Save("Toggles", Toggles)
+end)
+
+local MobAuraToggle = PageKillAura.AddToggle("Only Mob Kill Aura (Overrides Kill Aura)", Toggles.MobAura, function(value)
+    Toggles.MobAura = value 
+    Save("Toggles", Toggles)   
+end)
+
+local SliderKillDistance = PageKillAura.AddSlider("Kill Aura Distance", {Min = 0, Max = 500, Def = AuraSettings.KillDistance}, function(value)
+    AuraSettings.KillDistance = value
+    Save("AuraSettings", AuraSettings)
+end)
+
+local SliderPunchSpeed = PageKillAura.AddSlider("Hit Speed (ms)", {Min = 1, Max = 1000, Def = AuraSettings.PunchSpeed * 1000}, function(value)
+    AuraSettings.PunchSpeed = value/1000
+    Save("AuraSettings", AuraSettings)
+end)
+
+-- local Label1 = PageKillAura.AddLabel("Choose Aura Mode")
+
+local AuraMode = PageKillAura.AddDropdown("Aura Hit Mode",
+    {   
+    "Punch",
+    "Dark Blade (Arbiter Only)",
+    "Energy Blade"
+    }, function(value)
+        AuraSettings.Mode = value
+        Save("AuraSettings", AuraSettings)
+end, AuraSettings.Mode)
+
+
+
+local PageRoll = MainUI.AddPage("Roll", false)
+
+local RollAbility = PageRoll.AddButton("Roll Ability", function()
+    Rep.Reroll:InvokeServer()
+end)
+
+local Roll10Ability = PageRoll.AddButton("Roll 10 Abilities", function()
+    Rep.Reroll:InvokeServer(nil, nil, true)
+end)
+
+local ToggleAutoRoll = PageRoll.AddToggle("Auto Roll Ability", Toggles.AutoRoll, function(value)
+    Toggles.AutoRoll = value
+    Save("Toggles", Toggles)
+    toggleHideRoll()
+    if(value) then
+        autoRoll()
+    end
+end)
+
+local ToggleAutoRoll = PageRoll.AddToggle("Hide GUI when Auto", RollSettings.Hide, function(value)
+    RollSettings.Hide = value
+    Save("RollSettings", RollSettings)
+
+    toggleHideRoll()
+end)
+
+
+local RollThreshold = PageRoll.AddSlider("Roll Minimum Level (Global)", {Min = 0, Max = 30, Def = RollSettings.Threshold, Decimal = 1}, function(value)
+    RollSettings.Threshold = value
+    Save("RollSettings", RollSettings)
+end)
+
+
+local AutoStore = PageRoll.AddToggle("Auto Store Ability", RollSettings.Store, function(value)
+    RollSettings.Store = value
+end)
+
+
+
+
+
+
+local MassUpgradeFistButton = PageUpgrade.AddButton(
+    "Mass Upgrade Current Fist",
+    function()
+        massUpgrade("Fist", UpgradeSettings.IgnoreUpgraded, UpgradeSettings.Threshold)
+    end
+)
+
+local MassUpgradeRelicButton = PageUpgrade.AddButton(
+    "Mass Upgrade Current Relic",
+    function()
+        massUpgrade("Relic", UpgradeSettings.IgnoreUpgraded, UpgradeSettings.Threshold)
+    end
+)
+
+local UpgradeThresholdSlider = PageUpgrade.AddSlider(
+    "Material Level Threshold", 
+    {
+        Min = 0.0, 
+        Max = 10.0, 
+        Def = UpgradeSettings.Threshold,
+        Decimal = 1
+    }, 
+    function(value)
+        UpgradeSettings.Threshold = value
+        Save("UpgradeSettings", UpgradeSettings)
+    end
+)
+
+local IgnoreUpgraded = PageUpgrade.AddToggle(
+    "Ignore Upgraded As Material", 
+    UpgradeSettings.IgnoreUpgraded, 
+    function(value)
+        UpgradeSettings.IgnoreUpgraded = value
+        Save("UpgradeSettings", UpgradeSettings)
+    end
+)
+
+
+
+
+
+
+local Button1 = PageAutoRoll.AddButton("Set Minimum Levels (Overrides Global, 0 is OFF)", function()
+    for i, v in pairs(AbilityDict) do
+        print("key: "..i.. " value: ".. v)
+    end
+end)
+
+local AbilitySliders = {}
+
+for i, v in pairs(AbilityList) do
+    table.insert(AbilitySliders, (PageAutoRoll.AddSlider(v, {Min = 0, Max = 30, Def = AbilityDict[v], Decimal = 1}, function(value)
+        AbilityDict[v] = value
+        Save("AbilityFilter", AbilityDict)
+    end)))
+end
+
+local PageLuck = MainUI.AddPage("Luck")
+
+local AutoLuck = PageLuck.AddToggle("Auto Cast Ultra & Super Luck", RollSettings.Luck, function(value)
+    RollSettings.Luck = value
+    Save("RollSettings", RollSettings)
+    if value then
+        autoLuck()
+    end
+end)
+
+local target
+
+local TargetPlayer = PageLuck.AddTextBox(
+    "Target Player",
+    function(value)
+        target = nil
+        for _, player in Players:GetChildren() do
+            if player.Name:lower():find(value:lower(), 1, true) then
+                target = player
+            end
+        end
+    end
+)
+
+local LuckMode = PageLuck.AddDropdown("Luck Mode", {
+    "Bad Luck",
+    "Lucky",
+    "Super Lucky",
+    "Ultra Lucky",
+    }, 
+    function(value)
+        RollSettings.LuckMode = value
+        Save("RollSettings", RollSettings)
+    end, 
+    RollSettings.LuckMode
+)
+
+
+local GiveLuck = PageLuck.AddButton(
+    "Give Luck to Player",
+    function()
+        if target then
+            local args = {
+                [1] = "Group Gamble",
+                [2] = {
+                    ["Color"] = Color3.new(),
+                    ["Boost"] = RollSettings.LuckMode,
+                    ["HitPlayers"] = {
+                        [1] = target
+                    }
+                }
+            }
+            
+            Rep.Remotes.SkillCast:FireServer(unpack(args))
+        end
+    end
+)
+
+local GlobalLuck = PageLuck.AddButton(
+    "Luck Everyone",
+    function()
+        local playerList = {}
+        for _, player in Players:GetChildren() do
+            table.insert(playerList, player)
+        end
+        local args = {
+            [1] = "Group Gamble",
+            [2] = {
+                ["Color"] = Color3.new(),
+                ["Boost"] = RollSettings.LuckMode,
+                ["HitPlayers"] = playerList
+            }
+        }
+        
+        Rep.Remotes.SkillCast:FireServer(unpack(args))
+    end
+)
+
+local PageMisc = MainUI.AddPage("Misc", false)
+
+local AttackBarrier = PageMisc.AddToggle("Damage Arlo Boss Barrier", Toggles.BreakBarrier, function(value)
+    Toggles.BreakBarrier = value
+    Save("Toggles", Toggles)
+end)
+
+local King = PageMisc.AddToggle("Relinquish King", Toggles.RelinquishCrown, function(value)
+    Toggles.RelinquishCrown = value
+    Save(Toggles.RelinquishCrown)
+end)
+
+local Reset = PageMisc.AddButton("Reset Character", function()
+    Player.Character.Humanoid.Health = 0
+end)
+
+local ServerHop = PageMisc.AddButton("Server Hop", function()
+    serverHop()
+end)
+
+local autoRejoin = PageMisc.AddToggle("Auto Server Hop on Moderator Join", FarmSettings.LeaveOnMod, function(value)
+    FarmSettings.LeaveOnMod = value
+    Save("FarmSettings", FarmSettings)
+    if value then
+        checkCurrentMods()
+    end
+end)
