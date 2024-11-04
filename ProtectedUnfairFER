@@ -936,22 +936,7 @@ local BossToggle = PageFarm.AddToggle("Auto Boss Kill", Toggles.FarmBoss, functi
     Save("Toggles", Toggles)
 end)
 
-local TpToggle = PageFarm.AddToggle("Hidden Farm", FarmSettings.Hidden, function(value)
-    FarmSettings.Hidden = value
-    Save("FarmSettings", FarmSettings)
-    if not value and Toggles.Farm then
-        pcall(function()
-            Workspace.Gravity = 196.2
-            Player.Character:MoveTo(
-                Vector3.new(
-                    Player.Character.HumanoidRootPart.Position.x, 
-                    Player.Character.HumanoidRootPart.Position.y + FarmSettings.FarmDistance, 
-                    Player.Character.HumanoidRootPart.Position.z
-                )
-            )
-        end)
-    end
-end)
+
 
 local QuestSelect = PageFarm.AddDropdown("Quest Select", {
     "Real Amgogus",
@@ -969,10 +954,7 @@ local QuestSelect = PageFarm.AddDropdown("Quest Select", {
         Save("FarmSettings", FarmSettings)
 end, FarmSettings.SelectedQuest)
 
-local Test = PageFarm.AddToggle("Testag Farm", FarmSettings.Test, function(value)
-    FarmSettings.Test = value
-    Save("FarmSettings", FarmSettings)
-end)
+
 
 local PageKillAura = MainUI.AddPage("Kill Aura", false)
 
