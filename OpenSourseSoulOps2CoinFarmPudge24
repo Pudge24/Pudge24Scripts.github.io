@@ -1,0 +1,103 @@
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.ResetOnSpawn = false  -- Окно не пропадает при смерти игрока
+local Frame = Instance.new("Frame")
+local ToggleButton = Instance.new("TextButton")
+local CloseButton = Instance.new("TextButton")
+
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+Frame.Parent = ScreenGui
+Frame.Size = UDim2.new(0, 250, 0, 100)  -- Уменьшенная высота
+Frame.Position = UDim2.new(0.5, -125, 0.5, -50)
+Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)  -- Цвет фона
+
+ToggleButton.Parent = Frame
+ToggleButton.Size = UDim2.new(0, 230, 0, 40)
+ToggleButton.Position = UDim2.new(0, 10, 0, 10)
+ToggleButton.Text = "Toggle coin farm (First choose character)"
+ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)  -- Цвет кнопки
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Цвет текста
+
+CloseButton.Parent = Frame
+CloseButton.Size = UDim2.new(0, 20, 0, 20)
+CloseButton.Position = UDim2.new(1, -25, 0, 5)
+CloseButton.Text = "X"
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Цвет кнопки закрытия
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Цвет текста
+
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+Frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+local farming = false
+local clickCount = 0
+
+local function teleportToCoins()
+    while farming do
+        local foundCoin = false
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("Part") and (obj.Parent and (obj.Parent.Name == "Coin" or obj.Parent.Name == "CandyCorn")) then
+                humanoidRootPart.CFrame = obj.CFrame
+                wait(0.1)
+                foundCoin = true
+            end
+        end
+        if not foundCoin then
+            humanoidRootPart.CFrame = workspace.Lobby.MainLobby.Obby.ObbyPlatforms:GetChildren()[2].CFrame
+            wait(0.5)
+        end
+    end
+end
+
+ToggleButton.MouseButton1Click:Connect(function()
+    clickCount = clickCount + 1
+    farming = clickCount % 2 == 1
+    if farming then
+        spawn(teleportToCoins)
+    end
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Телепортация игрока каждую минуту
+while true do
+    wait(60)
+    humanoidRootPart.CFrame = workspace.Lobby.MainLobby.CharacterMorphs.UndyneMorph.MorphPad.CFrame
+end
