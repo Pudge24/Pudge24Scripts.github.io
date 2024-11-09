@@ -1,0 +1,649 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+
+local HighlightLib = {}
+
+local DepthMode = "AlwaysOnTop"
+local FillTransparency = 0.5
+local OutlineTransparency = 0.5
+local CoreGui = game:FindService("CoreGui")
+local Workspace = game.Workspace
+local Storage = Instance.new("Folder")
+Storage.Parent = CoreGui
+Storage.Name = "Highlight_Storage"
+
+HighlightLib.Models = {}
+HighlightLib.Parts = {}
+
+local function addNameTag(instance, name, color)
+    local nameTag = Instance.new("BillboardGui")
+    nameTag.Adornee = instance
+    nameTag.Size = UDim2.new(0, 75, 0, 30)
+    nameTag.StudsOffset = Vector3.new(0, 3, 0)
+    nameTag.AlwaysOnTop = true
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextColor3 = color
+    textLabel.TextStrokeTransparency = 0
+    textLabel.Text = name
+    textLabel.TextScaled = true
+    textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+    textLabel.TextSize = 12
+    textLabel.Parent = nameTag
+
+    nameTag.Parent = instance
+end
+
+local function HighlightPart(name, fillColor, outlineColor)
+    for _, object in ipairs(Workspace:GetDescendants()) do
+        if object:IsA("BasePart") then
+            if object.Name:lower() == name:lower() then
+                local Highlight = Instance.new("Highlight")
+                Highlight.Parent = Storage
+                Highlight.Adornee = object
+                Highlight.FillColor = fillColor
+                Highlight.DepthMode = DepthMode
+                Highlight.FillTransparency = FillTransparency
+                Highlight.OutlineColor = outlineColor
+                Highlight.OutlineTransparency = OutlineTransparency
+                addNameTag(object, name, outlineColor)
+                table.insert(HighlightLib.Parts, {object, Highlight})
+            end
+        end
+    end
+end
+
+local function HighlightModel(name, fillColor, outlineColor)
+    for _, model in ipairs(Workspace:GetDescendants()) do
+        if model:IsA("Model") and model.Name:lower() == name:lower() then
+            local highlight = Instance.new("Highlight")
+            highlight.Name = model.Name
+            highlight.FillColor = fillColor
+            highlight.DepthMode = DepthMode
+            highlight.FillTransparency = FillTransparency
+            highlight.OutlineColor = outlineColor
+            highlight.OutlineTransparency = OutlineTransparency
+            highlight.Parent = Storage
+            highlight.Adornee = model
+            table.insert(HighlightLib.Models, {model, highlight})
+            addNameTag(model, model.Name, outlineColor)
+            return
+        end
+    end
+end
+
+local function UpdateHighlights()
+    for _, highlightedPart in pairs(HighlightLib.Parts) do
+        local part, highlight = highlightedPart[1], highlightedPart[2]
+        if part and part.Parent then
+            highlight.Adornee = part
+        else
+            highlight:Destroy()
+            table.remove(HighlightLib.Parts, _)
+        end
+    end
+
+    for _, highlightedModel in pairs(HighlightLib.Models) do
+        local model, highlight = highlightedModel[1], highlightedModel[2]
+        if model and model.Parent then
+            highlight.Adornee = model
+        else
+            highlight:Destroy()
+            table.remove(HighlightLib.Models, _)
+        end
+    end
+end
+
+Workspace.DescendantAdded:Connect(function(instance)
+    if instance:IsA("BasePart") or instance:IsA("Model") then
+        UpdateHighlights()
+    end
+end)
+
+HighlightLib.HighlightModel = function(name, fillColor, outlineColor)
+    HighlightModel(name, fillColor, outlineColor)
+end
+
+HighlightLib.HighlightPart = function(name, fillColor, outlineColor)
+    HighlightPart(name, fillColor, outlineColor)
+end
+
+
+
+
+
+
+local Window = Rayfield:CreateWindow({
+    Name = "Granny secret script pudge24 ft. Remote Spy prod. DEX",
+    LoadingTitle = "Granny Altushka Skibidi Podlivushka",
+    LoadingSubtitle = "by Pudge24",
+    ConfigurationSaving = {
+       Enabled = true,
+       FolderName = "Pudger24Hub", -- Create a custom folder for your hub/game
+       FileName = "GrannyCFG"
+    },
+    Discord = {
+       Enabled = true,
+       Invite = "Fp7PfV7Tav", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+    },
+    KeySystem = false, -- Set this to true to use our key system
+    KeySettings = {
+       Title = "Key in the discord channel(мои-скрипты)",
+       Subtitle = "Key System",
+       Note = "discord.gg/Fp7PfV7Tav",
+       FileName = "KeyGranny", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+       GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+       Key = {"https://raw.githubusercontent.com/Pudge24/Pudge24Scripts.github.io/refs/heads/main/README.md"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+    }
+ })
+
+ local MainTab = Window:CreateTab("Main", nil) -- Title, Image
+ local MainSection = MainTab:CreateSection("Main")
+
+ 
+ local Slider = MainTab:CreateSlider({
+   Name = "WalkSpeed Slider",
+   Range = {1, 350},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderws", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+   end,
+})
+
+
+local Input = MainTab:CreateInput({
+   Name = "Walkspeed",
+   PlaceholderText = "1-500",
+   RemoveTextAfterFocusLost = true,
+   Callback = function(Text)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Text)
+   end,
+})
+
+local Button = MainTab:CreateButton({
+   Name = "Reset Speed",
+   Callback = function()
+   game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (10)
+   end,
+})
+
+
+local Toggle = MainTab:CreateToggle({
+   Name = "Loop WalkSpeed",
+   CurrentValue = false,
+   Flag = "toggle4",
+   Callback = function(CurrentValue)
+      if CurrentValue then
+         -- Start the loop
+         _G.loop4 = true
+         while _G.loop4 do
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 55
+            wait(0.1) -- Adjust the wait time as needed
+         end
+      else
+         -- Stop the loop
+         _G.loop4 = false
+      end
+   end,
+})
+
+
+
+
+local OtherSection = MainTab:CreateSection("Other")
+
+
+
+
+local Button = MainTab:CreateButton({
+   Name = "Infinite Yield",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+   end,
+})
+
+local Button = MainTab:CreateButton({
+   Name = "FullBright",
+   Callback = function()
+       local function setFullbright()
+           local lighting = game:GetService("Lighting")
+           lighting.Brightness = 2
+           lighting.ClockTime = 12
+           lighting.FogEnd = 100000
+           lighting.GlobalShadows = false
+           lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+       end
+
+       setFullbright()
+   end
+})
+
+local ExpTab = Window:CreateTab("Exploits", nil) -- Title, Image
+local MainSection1 = ExpTab:CreateSection("Main Exploits")
+
+local Toggle = ExpTab:CreateToggle({
+   Name = "Loop Delete Granny",
+   CurrentValue = false,
+   Flag = "toggle1",
+   Callback = function(CurrentValue)
+      if CurrentValue then
+         -- Start the loop
+         _G.loop1 = true
+         while _G.loop1 do
+            local function removeGranny()
+               for i = 1, 5 do
+                   local preset = workspace:FindFirstChild("Preset" .. i)
+                   if preset then
+                       local granny = preset.Locks:FindFirstChild("Granny")
+                       if granny then
+                           granny:Destroy()
+                       end
+                   end
+               end
+           end
+           
+           while true do
+               removeGranny()
+               wait(20) -- Ждем 20 секунд перед следующим удалением
+           end           
+         end
+      else
+         -- Stop the loop
+         _G.loop1 = false
+      end
+   end,
+})
+
+
+
+local Toggle = ExpTab:CreateToggle({
+   Name = "Loop Delete Angela(Spider)",
+   CurrentValue = false,
+   Flag = "toggle2",
+   Callback = function(CurrentValue)
+      if CurrentValue then
+         -- Start the loop
+         _G.loop2 = true
+         while _G.loop2 do
+            local function removeSlendrinaMother()
+               for i = 1, 5 do
+                   local preset = workspace:FindFirstChild("Preset" .. i)
+                   if preset then
+                       local slendrinaMother = preset.Locks:FindFirstChild("SlendrinaMother")
+                       if slendrinaMother then
+                           slendrinaMother:Destroy()
+                       end
+                   end
+               end
+           end
+           
+           while true do
+               removeSlendrinaMother()
+               wait(20) -- Ждем 20 секунд перед следующим удалением
+           end                        
+         end
+      else
+         -- Stop the loop
+         _G.loop2 = false
+      end
+   end,
+})
+
+
+local presets = {"Preset1", "Preset2", "Preset3", "Preset4", "Preset5"}
+
+local sound = Instance.new("Sound")
+sound.Name = "ButtonClickSound"
+sound.SoundId = "rbxassetid://654933978"
+sound.Volume = 10
+sound.Parent = game.ReplicatedStorage
+
+
+
+
+local Toggle = ExpTab:CreateToggle({
+   Name = "Annoy Server(Open doors)",
+   CurrentValue = false,
+   Flag = "toggle3",
+   Callback = function(CurrentValue)
+      if CurrentValue then
+         -- Start the loop
+         _G.loop3 = true
+         while _G.loop3 do
+            local function findAndTriggerRemoteEvent()
+               for _, obj in ipairs(game.Workspace:GetDescendants()) do
+                   if obj:IsA("RemoteEvent") and obj.Name == "InteractRemote" and obj.Parent and obj.Parent.Name == "Door" then
+                       obj:FireServer()
+                   end
+               end
+           end
+           
+           -- Вызов функции
+           findAndTriggerRemoteEvent()       
+           wait(0.1)
+         end
+      else
+         -- Stop the loop
+         _G.loop3 = false
+      end
+   end,
+})
+
+local Toggle = ExpTab:CreateToggle({
+   Name = "Inf Ammo",
+   CurrentValue = false,
+   Flag = "toggle4",
+   Callback = function(CurrentValue)
+      if CurrentValue then
+         -- Start the loop
+         _G.loop4 = true
+         while _G.loop4 do
+            local player = game.Players.LocalPlayer
+            local backpack = player.Backpack
+            backpack.ShotgunAmmo.Value = 9999
+            backpack.CrossbowAmmo.Value = 9999
+            backpack.PepperSprayAmmo.Value = 9999
+            wait(0.3)
+         end
+      else
+         -- Stop the loop
+         _G.loop4 = false
+      end
+   end,
+})
+
+
+
+local Toggle = ExpTab:CreateToggle({
+    Name = "Loop Drop Freeze Trap",
+    CurrentValue = false,
+    Flag = "toggle5",
+    Callback = function(CurrentValue)
+       if CurrentValue then
+          -- Start the loop
+          _G.loop5 = true
+          while _G.loop5 do
+                task.wait(0.1)
+                local args = {
+                    [1] = game:GetService("Players").LocalPlayer
+                }
+                local player = game:GetService("Players").LocalPlayer
+                local character = player.Character
+                local backpack = player:FindFirstChildOfClass("Backpack")
+            
+                local freezeTrapTool = backpack and backpack:FindFirstChild("Freeze trap")
+                if freezeTrapTool and character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        humanoid:EquipTool(freezeTrapTool)
+                    end
+                end
+            
+                local freezeTrap = workspace:FindFirstChild("General Items"):FindFirstChild("FreezeTrap")
+                if freezeTrap and freezeTrap:FindFirstChild("InteractRemote") then
+                    freezeTrap.InteractRemote:FireServer(unpack(args))
+                end
+                task.wait(0.1)
+            
+                local freezeTrapInCharacter = character and character:FindFirstChild("Freeze trap")
+                if freezeTrapInCharacter and freezeTrapInCharacter:FindFirstChild("FireEvent") then
+                    freezeTrapInCharacter.FireEvent:FireServer(unpack(args))
+                end
+                task.wait(0.1)
+            end
+                print("cancell")
+        else
+          -- Stop the loop
+          _G.loop5 = false
+       end
+    end,
+ })
+
+ local Button = ExpTab:CreateButton({
+    Name = "Show Generation Seed",
+    Callback = function()
+        -- Найти и воспроизвести звук
+        local sound = game.ReplicatedStorage:FindFirstChild("ButtonClickSound")
+        if sound then
+            sound:Play()
+        end
+
+        -- Найти пресет и вывести его название
+        local foundPresetName = "None"
+        for _, presetName in ipairs(presets) do
+            local preset = workspace:FindFirstChild(presetName, true)
+            if preset then
+                foundPresetName = preset.Name
+                break
+            end
+        end
+        Rayfield:Notify({
+            Title = "Current seed is",
+            Content = foundPresetName,
+            Duration = 5,
+            Image = nil,
+        })
+    end,
+})
+
+local Button = ExpTab:CreateButton({
+    Name = "Get All Items",
+    Callback = function()
+    local function callInteractRemotes()
+    for _, obj in pairs(game.Workspace:GetDescendants()) do
+        if obj:IsA("RemoteEvent") and obj.Name == "InteractRemote" then
+            obj:FireServer()
+        end
+    end
+end
+
+-- Пример вызова функции
+callInteractRemotes()
+end
+})
+ 
+
+
+
+--EXPLOITS TAB
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+--zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+
+
+ local VsTab = Window:CreateTab("Visuls", nil) -- Title, Image
+ local MonsterVSSection = VsTab:CreateSection("Enemy ESP")
+ 
+ local Button = VsTab:CreateButton({
+    Name = "Granny ESP",
+    Callback = function()
+HighlightLib.HighlightModel("Granny", Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 0, 0))
+
+    workspace.DescendantAdded:Connect(function(descendant)
+        if descendant:IsA("Model") and descendant.Name == "Granny" then
+            HighlightLib.HighlightModel("Granny", Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 0, 0))
+        end
+    end)
+    end
+ })
+
+ local Button = VsTab:CreateButton({
+    Name = "Angela ESP (Spider)",
+    Callback = function()
+    HighlightLib.HighlightModel("SlendrinaMother", Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 0, 0))
+
+    workspace.DescendantAdded:Connect(function(descendant)
+        if descendant:IsA("Model") and descendant.Name == "SlendrinaMother" then
+            HighlightLib.HighlightModel("SlendrinaMother", Color3.fromRGB(255, 0, 0), Color3.fromRGB(255, 0, 0))
+        end
+    end)
+    end
+ })
+
+ local MonsterVSSection1 = VsTab:CreateSection("Other ESP")
+
+ local Button = VsTab:CreateButton({
+    Name = "Items ESP",
+    Callback = function()
+    local lighting = game.Lighting
+    local presets = {"Preset1", "Preset2", "Preset3", "Preset4", "Preset5"}
+
+    local toolNames = {}
+    if lighting then
+        for _, tool in pairs(lighting:GetChildren()) do
+            if tool:IsA("Tool") then
+                table.insert(toolNames, tool.Name)
+            end
+        end
+    end
+
+    local function highlightMatchingParts()
+        for _, part in ipairs(workspace:GetDescendants()) do
+            if part:IsA("BasePart") and table.find(toolNames, part.Name) then
+                HighlightLib.HighlightPart(part.Name, Color3.fromRGB(0, 225, 0), Color3.fromRGB(0, 225, 0))
+            end
+        end
+    end
+
+    highlightMatchingParts()
+
+    workspace.DescendantAdded:Connect(function(descendant)
+        if descendant:IsA("BasePart") and table.find(toolNames, descendant.Name) then
+            HighlightLib.HighlightPart(descendant.Name, Color3.fromRGB(0, 255, 0), Color3.fromRGB(0, 225, 0))
+        end
+    end)
+ end
+})
+
+local TpTab = Window:CreateTab("Auto Escape", nil) -- Title, Image
+local TpSection = TpTab:CreateSection("Endings")
+
+local Button = TpTab:CreateButton({
+    Name = "Door Ending(Ending 1)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local function findPartByName(parent, name)
+    for _, child in ipairs(parent:GetDescendants()) do
+        if child:IsA("Part") and child.Name == name then
+            return child
+        end
+    end
+    return nil
+end
+
+local endingPart = findPartByName(game.Workspace, "Ending1")
+
+if endingPart then
+
+    character:MoveTo(endingPart.Position)
+else
+    print("Объект 'Ending1' не найден в иерархии.")
+end     
+    end
+})
+
+
+local Button = TpTab:CreateButton({
+    Name = "Door Teddy Ending(Ending 2)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local function findPartByName(parent, name)
+    for _, child in ipairs(parent:GetDescendants()) do
+        if child:IsA("Part") and child.Name == name then
+            return child
+        end
+    end
+    return nil
+end
+
+local endingPart = findPartByName(game.Workspace, "Ending2")
+
+if endingPart then
+
+    character:MoveTo(endingPart.Position)
+else
+    print("Объект 'Ending2' не найден в иерархии.")
+end     
+    end
+})
+
+local Button = TpTab:CreateButton({
+    Name = "Car Ending(Ending 3)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local function findPartByName(parent, name)
+    for _, child in ipairs(parent:GetDescendants()) do
+        if child:IsA("Part") and child.Name == name then
+            return child
+        end
+    end
+    return nil
+end
+
+local endingPart = findPartByName(game.Workspace, "Ending1")
+
+if endingPart then
+
+    character:MoveTo(endingPart.Position)
+else
+    print("Объект 'Ending3' не найден в иерархии.")
+end     
+    end
+})
+
+local Button = TpTab:CreateButton({
+    Name = "Sewer Ending(Ending 4)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+local function findPartByName(parent, name)
+    for _, child in ipairs(parent:GetDescendants()) do
+        if child:IsA("Part") and child.Name == name then
+            return child
+        end
+    end
+    return nil
+end
+
+local endingPart = findPartByName(game.Workspace, "Ending1")
+
+if endingPart then
+
+    character:MoveTo(endingPart.Position)
+else
+    print("Объект 'Ending4' не найден в иерархии.")
+end     
+    end
+})
