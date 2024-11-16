@@ -125,7 +125,7 @@ local Toggle = ExpTab:CreateToggle({
           -- Start the loop
           _G.loop98 = true
           while _G.loop98 do
-            game:GetService("Players").LocalPlayer.leaderstats.Sun.Value = 999999999999
+            game:GetService("Players").LocalPlayer.leaderstats.Diamonds.Value = 999999999999
              wait(0.1) -- Adjust the wait time as needed
           end
        else
