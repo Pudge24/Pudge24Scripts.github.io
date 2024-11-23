@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "Garden Mayhem secret script pudge24",
+    Name = "OP BATLEFUCKROUNDS NEGGARARARSvbnmcgfh vchfgb ncfvgbhnm chfvgb mncfvgb hmn",
     LoadingTitle = "FUCK NIGGERS NIGGAORES",
     LoadingSubtitle = "by Pudge24",
     ConfigurationSaving = {
@@ -116,6 +116,7 @@ local Toggle = ExpTab:CreateToggle({
           while _G.loop1 do
             local ohString1 = "HollowPurple"
             game:GetService("ReplicatedStorage").Remotes.Gojo:FireServer(ohString1)
+            wait(0.2)
           end
        else
           -- Stop the loop
