@@ -1,0 +1,42 @@
+game:GetService("Players").LocalPlayer.creepers.gold.Value = true
+game:GetService("Players").LocalPlayer.creepers.ice.Value = true
+game:GetService("Players").LocalPlayer.creepers.invisable.Value = true
+game:GetService("Players").LocalPlayer.creepers.lava.Value = true
+game:GetService("Players").LocalPlayer.creepers.toxic.Value = true
+game:GetService("Players").LocalPlayer.creepers.void.Value = true
+wait()
+local player = game:GetService("Players").LocalPlayer
+local armorFolder = player:FindFirstChild("armor")
+
+if not armorFolder then
+    armorFolder = Instance.new("Folder")
+    armorFolder.Name = "armor"
+    armorFolder.Parent = player
+end
+
+local armorNames = {"leather armor", "iron armor", "gold armor", "diamond armor", "elytra"}
+
+for _, name in ipairs(armorNames) do
+    local stringValue = Instance.new("StringValue")
+    stringValue.Name = name
+    stringValue.Value = name
+    stringValue.Parent = armorFolder
+end
+wait()
+local player = game:GetService("Players").LocalPlayer
+local weaponsFolder = player:FindFirstChild("weapons")
+
+if not weaponsFolder then
+    weaponsFolder = Instance.new("Folder")
+    weaponsFolder.Name = "weapons"
+    weaponsFolder.Parent = player
+end
+
+local weaponNames = {"Obsidian hammer sword", "ruby sword", "iron sword", "diamond sword", "sapphire sword", "gold sword"}
+
+for _, name in ipairs(weaponNames) do
+    local stringValue = Instance.new("StringValue")
+    stringValue.Name = name
+    stringValue.Value = name
+    stringValue.Parent = weaponsFolder
+end
