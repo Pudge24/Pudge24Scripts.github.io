@@ -1,8 +1,8 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "OP BATLEFUCKROUNDS NEGGARARARSvbnmcgfh vchfgb ncfvgbhnm chfvgb mncfvgb hmn",
-    LoadingTitle = "FUCK NIGGERS NIGGAORES",
+    Name = "OP BATLEFUCKROUNDS AND OP SCRIPT",
+    LoadingTitle = "So op script",
     LoadingSubtitle = "by Pudge24",
     ConfigurationSaving = {
        Enabled = true,
@@ -97,7 +97,7 @@ local Button = MainTab:CreateButton({
 local ExpTab = Window:CreateTab("Exploits", nil) -- Title, Image
 
 local Button = ExpTab:CreateButton({
-    Name = "No cd niggaaa",
+    Name = "No cd, Early Access, InfAwaken",
     Callback = function()
         game:GetService("Players").LocalPlayer.NoCD.Value = true
         game:GetService("Players").LocalPlayer.EarlyAccess.Value = true
@@ -106,7 +106,7 @@ local Button = ExpTab:CreateButton({
 })
 
 local Toggle = ExpTab:CreateToggle({
-    Name = "Fuck server gojo 18+",
+    Name = "Gojo Spam Hollow Puple",
     CurrentValue = false,
     Flag = "toggle1",
     Callback = function(CurrentValue)
@@ -126,7 +126,7 @@ local Toggle = ExpTab:CreateToggle({
  })
 
  local Button = ExpTab:CreateButton({
-    Name = "Get kills(Кикнет найхуй через 30 секунд)",
+    Name = "Get kills(Will kick you after 30sec, just rejoin)",
     Callback = function()
         while wait() do
             local players = game:GetService("Players")
@@ -144,3 +144,16 @@ local Toggle = ExpTab:CreateToggle({
         end
     end
  })
+
+local Button = ExpTab:CreateButton({
+Name = "Crash server",
+Callback = function()
+while wait() do
+local args = {
+    [1] = "Awaken"
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Goku"):FireServer(unpack(args))
+end
+end
+})
