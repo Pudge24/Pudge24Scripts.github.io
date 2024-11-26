@@ -69,7 +69,7 @@ local Toggle = MainTab:CreateToggle({
          -- Start the loop
          _G.loop4 = true
          while _G.loop4 do
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 55
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 115
             wait(0.1) -- Adjust the wait time as needed
          end
       else
