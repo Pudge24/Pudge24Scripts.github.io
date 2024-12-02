@@ -203,7 +203,7 @@ skiddersarenigger.BorderSizePixel = 0
 skiddersarenigger.Position = UDim2.new(-0.00319539174, 0, -0.10825596, 0)
 skiddersarenigger.Size = UDim2.new(0, 288, 0, 50)
 skiddersarenigger.Font = Enum.Font.SourceSans
-skiddersarenigger.Text = "Realirist's OP BATTLEGROUNDS GUI (dont skid me nigga)"
+skiddersarenigger.Text = "Realirist tysm"
 skiddersarenigger.TextColor3 = Color3.fromRGB(255, 255, 255)
 skiddersarenigger.TextScaled = true
 skiddersarenigger.TextSize = 14.000
@@ -468,8 +468,6 @@ UISizeConstraint_20.MinSize = Vector2.new(200, 28)
 local function ISQVX_fake_script() -- Main.LocalScript 
 	local script = Instance.new('LocalScript', Main)
 
-	warn('OP BATTLEGROUNDS GUI V8 BY REALIRIST')
-	warn('skidders are dirty niggers')
 	script.Parent['3'].MouseButton1Click:Connect(function()
 		local remotes = game.ReplicatedStorage:WaitForChild('Remotes',5)
 		if remotes then
