@@ -561,7 +561,7 @@ local function ISQVX_fake_script() -- Main.LocalScript
 					local todo = remotes:WaitForChild('Todo',5)
 					if todo then
 						local orgCF = game.Players.LocalPlayer.Character:FindFirstChild('HumanoidRootPart').CFrame
-						game.Players.LocalPlayer.Character:FindFirstChild('HumanoidRootPart').CFrame = CFrame.new(50000,0,50000)
+						game.Players.LocalPlayer.Character:FindFirstChild('HumanoidRootPart').CFrame = CFrame.new(1500,0,1500)
 						todo:FireServer('Boogie',nil,game.Players:FindFirstChild(script.Parent.target.Text).Character)
 						task.wait(2)
 						game.Players.LocalPlayer.Character:FindFirstChild('HumanoidRootPart').CFrame = orgCF
