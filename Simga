@@ -1,5 +1,3 @@
-
-
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local soundName = "NotifySound1"
@@ -270,3 +268,38 @@ teleportToChaosRings()
 
     end
 })
+
+
+local Players = game:GetService("Players")
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local Toggle = ExpTab:CreateToggle({
+    Name = "Stun Everyone",
+    CurrentValue = false,
+    Flag = "toggles",
+    Callback = function(CurrentValue)
+        if CurrentValue then
+            -- Start the loop
+            _G.loops = true
+            while _G.loops do
+                for _, player in ipairs(Players:GetPlayers()) do
+                    -- Проверяем, что игрок не является LocalPlayer
+                    if player ~= LocalPlayer then
+                        local ohInstance1 = workspace:FindFirstChild(player.Name)
+                        if ohInstance1 then
+                            game:GetService("ReplicatedStorage").EggStunEvent:FireServer(ohInstance1)
+                        end
+                    end
+                end
+                wait(0.3) -- Добавляем небольшую задержку, чтобы избежать перегрузки
+            end
+        else
+            -- Stop the loop
+            _G.loops = false
+        end
+    end,
+})
+
+
