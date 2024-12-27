@@ -1,3 +1,9 @@
+local Module = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Discord%20Inviter/Source.lua"))()
+
+Module.Prompt({ invite = "https://discord.gg/Mp9vjHBYC6", name = "Pudge24 scritps Discord Server" }) -- name is optional
+
+Module.Join("https://discord.gg/Mp9vjHBYC6")
+
 local player = game:GetService("Players").LocalPlayer
 local gamepasses = player.ReplicatedData:FindFirstChild("gamepasses") or Instance.new("Folder", player.ReplicatedData)
 gamepasses.Name = "gamepasses"
