@@ -1,0 +1,16 @@
+local player = game:GetService("Players").LocalPlayer
+local gamepasses = player.ReplicatedData:FindFirstChild("gamepasses") or Instance.new("Folder", player.ReplicatedData)
+gamepasses.Name = "gamepasses"
+local boolValue = Instance.new("BoolValue")
+boolValue.Name = "259500454"
+boolValue.Parent = gamepasses
+local screenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+local textLabel = Instance.new("TextLabel", screenGui)
+textLabel.Size = UDim2.new(0, 300, 0, 50)
+textLabel.Position = UDim2.new(0.5, -150, 0.5, -25)
+textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
+textLabel.TextColor3 = Color3.new(1, 1, 1)
+textLabel.Text = "Skip Spins Gamepass successfully Created"
+textLabel.TextScaled = true
+wait(4)
+screenGui:Destroy()
