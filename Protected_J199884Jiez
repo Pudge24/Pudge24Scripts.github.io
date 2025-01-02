@@ -1,1 +1,5 @@
-
+local args = {
+                        [1] = "RageGourd" -- place item name here
+                    }
+                    
+                    game:GetService("ReplicatedStorage").Remotes.Server.Data.GiveItem:FireServer(unpack(args))
