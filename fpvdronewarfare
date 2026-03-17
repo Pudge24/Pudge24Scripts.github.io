@@ -721,3 +721,115 @@ print("✓ Мертвые игроки отображаются с ✖️ и 0 H
 print("✓ Нажмите Ctrl для скрытия/показа окна")
    end
 })
+
+
+
+
+local Toggle = ExpTab:CreateToggle({
+   Name = "Instaheal",
+   CurrentValue = false,
+   Flag = "toggleheal",
+   Callback = function(CurrentValue)
+      if CurrentValue then
+         -- Start the loop
+         _G.loopheal = true
+         while _G.loopheal do
+local args = {
+	true,
+	false,
+	true,
+	true
+}
+game:GetService("Players").LocalPlayer.Backpack:WaitForChild("Medkit"):WaitForChild("RemoteEvent"):FireServer(unpack(args))
+task.wait(0.01)
+
+         end
+      else
+         -- Stop the loop
+         _G.loopheal = false
+      end
+   end,
+})
+
+
+local Button = ExpTab:CreateButton({
+   Name = "Drone ESP",
+   Callback = function()
+   _G.Enabled = true
+
+-- Функция для определения владельца дрона
+local function getDroneOwner(drone)
+    -- Проходим по всем игрокам
+    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+        local character = player.Character
+        if character then
+            -- Ищем инструмент FPV Drone в персонаже
+            local tool = character:FindFirstChild("FPV Drone")
+            if tool and tool:IsA("Tool") then
+                -- Ищем ObjectValue с именем CURRENTDRONE
+                local currentDroneValue = tool:FindFirstChild("CURRENTDRONE")
+                if currentDroneValue and currentDroneValue:IsA("ObjectValue") then
+                    -- Проверяем, ссылается ли значение на нашего дрона
+                    if currentDroneValue.Value == drone then
+                        return player.Name
+                    end
+                end
+            end
+        end
+    end
+    return "Unknown"
+end
+
+workspace.ChildAdded:Connect(function(params)
+    if params.Name == "FPVDrone" and _G.Enabled then
+        -- Создаем Highlight
+        local highlight = Instance.new("Highlight")
+        highlight.Parent = params
+        
+        -- Создаем GUI в PrimaryPart
+        if params.PrimaryPart then
+            -- Создаем BillboardGui
+            local billboard = Instance.new("BillboardGui")
+            billboard.Name = "DroneOwnerGUI"
+            billboard.Parent = params.PrimaryPart
+            billboard.Size = UDim2.new(0, 100, 0, 30)
+            billboard.StudsOffset = Vector3.new(0, 2, 0)
+            billboard.AlwaysOnTop = true
+            
+            -- Создаем Frame для фона
+            local frame = Instance.new("Frame")
+            frame.Parent = billboard
+            frame.Size = UDim2.new(1, 0, 1, 0)
+            frame.BackgroundColor3 = Color3.new(0, 0, 0)
+            frame.BackgroundTransparency = 0.3
+            frame.BorderSizePixel = 0
+            
+            -- Создаем UICorner для скругления
+            local corner = Instance.new("UICorner")
+            corner.Parent = frame
+            corner.CornerRadius = UDim.new(0, 5)
+            
+            -- Создаем TextLabel для отображения владельца
+            local textLabel = Instance.new("TextLabel")
+            textLabel.Parent = frame
+            textLabel.Size = UDim2.new(1, 0, 1, 0)
+            textLabel.BackgroundTransparency = 1
+            textLabel.TextColor3 = Color3.new(1, 1, 1)
+            textLabel.TextScaled = true
+            textLabel.Font = Enum.Font.SourceSansBold
+            
+            -- Определяем владельца и устанавливаем текст
+            local ownerName = getDroneOwner(params)
+            textLabel.Text = "Owner: " .. ownerName
+            
+            -- Изменяем цвет фона в зависимости от владельца (для наглядности)
+            if ownerName ~= "Unknown" then
+                frame.BackgroundColor3 = Color3.new(0, 0.5, 1) -- Синий для известного владельца
+            else
+                frame.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5) -- Серый для неизвестного
+            end
+        end
+    end
+end)
+   end
+})
