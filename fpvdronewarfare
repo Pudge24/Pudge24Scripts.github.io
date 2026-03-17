@@ -1,0 +1,723 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local player = game.Players.LocalPlayer
+
+local UserInputService = game:GetService("UserInputService")
+
+
+UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+UserInputService.MouseIconEnabled = true
+
+local Window = Rayfield:CreateWindow({
+    Name = "FPV DRONE WARFARE",
+    LoadingTitle = "Bobos",
+    LoadingSubtitle = "by Pudge24",
+    ConfigurationSaving = {
+       Enabled = true,
+       FolderName = "Pudger24Hub", -- Create a custom folder for your hub/game
+       FileName = "PVZ_ROBLOX"
+    },
+    Discord = {
+       Enabled = true,
+       Invite = "Mp9vjHBYC6", -- The Discord invite code, do not include discord.gg/. E.g. discord.gg/ABCD would be ABCD
+       RememberJoins = true -- Set this to false to make them join the discord every time they load it up
+    },
+    KeySystem = false, -- Set this to true to use our key system
+    KeySettings = {
+       Title = "Key in the discord channel(мои-скрипты)",
+       Subtitle = "Key System",
+       Note = "discord.gg/Mp9vjHBYC6",
+       FileName = "KeyPVZ", -- It is recommended to use something unique as other scripts using Rayfield may overwrite your key file
+       SaveKey = true, -- The user's key will be saved, but if you change the key, they will be unable to use your script
+       GrabKeyFromSite = true, -- If this is true, set Key below to the RAW site you would like Rayfield to get the key from
+       Key = {"https://raw.githubusercontent.com/Pudge24/Pudge24Scripts.github.io/refs/heads/main/README.md"} -- List of keys that will be accepted by the system, can be RAW file links (pastebin, github etc) or simple strings ("hello","key22")
+    }
+ })
+
+ local MainTab = Window:CreateTab("Main", nil) -- Title, Image
+ local MainSection = MainTab:CreateSection("Main")
+
+ 
+ local Slider = MainTab:CreateSlider({
+   Name = "WalkSpeed Slider",
+   Range = {1, 350},
+   Increment = 1,
+   Suffix = "Speed",
+   CurrentValue = 16,
+   Flag = "sliderws", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Value)
+   end,
+})
+
+
+local Input = MainTab:CreateInput({
+   Name = "Walkspeed",
+   PlaceholderText = "1-500",
+   RemoveTextAfterFocusLost = true,
+   Callback = function(Text)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (Text)
+   end,
+})
+
+local Button = MainTab:CreateButton({
+   Name = "Reset Speed",
+   Callback = function()
+   game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = (10)
+   end,
+})
+
+
+local Toggle = MainTab:CreateToggle({
+   Name = "Loop WalkSpeed",
+   CurrentValue = false,
+   Flag = "toggle4",
+   Callback = function(CurrentValue)
+      if CurrentValue then
+         -- Start the loop
+         _G.loop4 = true
+         while _G.loop4 do
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 55
+            wait(0.1) -- Adjust the wait time as needed
+         end
+      else
+         -- Stop the loop
+         _G.loop4 = false
+      end
+   end,
+})
+
+
+
+
+local OtherSection = MainTab:CreateSection("Other")
+
+
+
+
+local Button = MainTab:CreateButton({
+   Name = "Infinite Yield",
+   Callback = function()
+   loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+   end
+})
+
+local ExpTab = Window:CreateTab("Exploits", nil) -- Title, Image
+
+local Button = ExpTab:CreateButton({
+   Name = "Mega gun(take a gun in hands)",
+   Callback = function()
+     local tool =  player.Character:FindFirstChildOfClass("Tool")
+     if tool then
+      local folder = tool:FindFirstChild("SPH_Weapon")
+      if folder then
+         local module = require(folder.WeaponStats)
+            module.fireRate = 1500
+            module.startAmmoPool = 999999999999999
+            module.maxAmmoPool = 999999999999999
+            module.recoil.vertical = 0
+            module.recoil.horizontal = 0
+            module.recoil.camShake = 0
+            module.gunRecoil.vertical = 0
+            module.gunRecoil.horizontal = 0
+            module.gunRecoil.punchMultiplier = 0
+            module.reloadSpeedModifier = 10000
+            module.infiniteAmmo = true
+
+
+      end
+     end
+   end
+})
+
+local Toggle = ExpTab:CreateToggle({
+   Name = "Autoreload",
+   CurrentValue = false,
+   Flag = "togglebobos",
+   Callback = function(CurrentValue)
+      if CurrentValue then
+        
+        
+
+         _G.loopbobos = true
+         while _G.loopbobos do
+            local tool =  player.Character:FindFirstChildOfClass("Tool")
+                    if tool then
+           local folder = tool:FindFirstChild("Ammo")
+           if folder then
+            local value = folder:FindFirstChild("MagAmmo")
+            if value and value.Value == 1 then
+    
+                local args = {
+	{
+		{
+			"\014",
+			"Move1",
+			true
+		},
+		{
+			"\014",
+			"Raise",
+			true
+		},
+		{
+			"\014",
+			"MagPouch",
+			true
+		},
+		{
+			"\014",
+			"MagPlace",
+			true
+		},
+		{
+			"\014",
+			"Move2",
+			true
+		},
+		{
+			"\014",
+			"MagOut",
+			true
+		},
+		{
+			"\014",
+			"Move2",
+			true
+		},
+		{
+			"\014",
+			"MagFall",
+			true
+		},
+		{
+			"\014",
+			"MidwayIn",
+			true
+		},
+		{
+			"\014",
+			"MagIn",
+			true
+		},
+		{
+			"\a"
+		},
+		{
+			"\014",
+			"Move4",
+			true
+		},
+		{
+			"\014",
+			"Hand",
+			true
+		}
+	}
+}
+game:GetService("ReplicatedStorage"):WaitForChild("RemoteEvent"):FireServer(unpack(args))
+end
+            end
+        end
+            task.wait(0.01)
+         end
+      else
+         _G.loopbobos = false
+      end
+   end,
+})
+
+
+local Button = ExpTab:CreateButton({
+   Name = "Drone tp gui",
+   Callback = function()
+   
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local LocalPlayer = Players.LocalPlayer
+
+-- Переменные для хранения выбранного игрока
+local selectedPlayer = nil
+local teleportKey = Enum.KeyCode.H -- Клавиша для телепортации
+
+-- Создаем GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "DroneTeleportGUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-- Проверяем, есть ли уже такой GUI
+for _, gui in pairs(LocalPlayer.PlayerGui:GetChildren()) do
+    if gui.Name == "DroneTeleportGUI" then
+        gui:Destroy()
+    end
+end
+
+ScreenGui.Parent = LocalPlayer.PlayerGui
+
+-- Основное окно
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 300, 0, 400)
+MainFrame.Position = UDim2.new(0, 20, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+MainFrame.BackgroundTransparency = 0.1
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
+
+-- Стилизация окна (закругленные углы)
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 8)
+UICorner.Parent = MainFrame
+
+-- Заголовок окна
+local TitleFrame = Instance.new("Frame")
+TitleFrame.Name = "TitleFrame"
+TitleFrame.Size = UDim2.new(1, 0, 0, 30)
+TitleFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+TitleFrame.BorderSizePixel = 0
+TitleFrame.Parent = MainFrame
+
+local TitleCorner = Instance.new("UICorner")
+TitleCorner.CornerRadius = UDim.new(0, 8)
+TitleCorner.Parent = TitleFrame
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Size = UDim2.new(1, -40, 1, 0)
+TitleLabel.Position = UDim2.new(0, 10, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Text = "Drone Teleport [H]"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.Font = Enum.Font.GothamBold
+TitleLabel.TextSize = 16
+TitleLabel.Parent = TitleFrame
+
+-- Кнопка закрытия
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 30, 0, 30)
+CloseButton.Position = UDim2.new(1, -30, 0, 0)
+CloseButton.BackgroundTransparency = 1
+CloseButton.Text = "✕"
+CloseButton.TextColor3 = Color3.fromRGB(255, 100, 100)
+CloseButton.TextSize = 20
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.Parent = TitleFrame
+
+CloseButton.MouseEnter:Connect(function()
+    CloseButton.TextColor3 = Color3.fromRGB(255, 50, 50)
+end)
+
+CloseButton.MouseLeave:Connect(function()
+    CloseButton.TextColor3 = Color3.fromRGB(255, 100, 100)
+end)
+
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui.Enabled = false
+    wait(0.1)
+    ScreenGui.Enabled = true
+    MainFrame.Visible = not MainFrame.Visible
+end)
+
+-- Панель с игроками
+local PlayersPanel = Instance.new("ScrollingFrame")
+PlayersPanel.Name = "PlayersPanel"
+PlayersPanel.Size = UDim2.new(1, -20, 1, -100)
+PlayersPanel.Position = UDim2.new(0, 10, 0, 40)
+PlayersPanel.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+PlayersPanel.BackgroundTransparency = 0.3
+PlayersPanel.BorderSizePixel = 0
+PlayersPanel.ScrollBarThickness = 8
+PlayersPanel.ScrollBarImageColor3 = Color3.fromRGB(80, 80, 90)
+PlayersPanel.CanvasSize = UDim2.new(0, 0, 0, 0)
+PlayersPanel.AutomaticCanvasSize = Enum.AutomaticSize.Y
+PlayersPanel.Parent = MainFrame
+
+local PanelCorner = Instance.new("UICorner")
+PanelCorner.CornerRadius = UDim.new(0, 6)
+PanelCorner.Parent = PlayersPanel
+
+-- Нижняя панель с информацией
+local BottomFrame = Instance.new("Frame")
+BottomFrame.Name = "BottomFrame"
+BottomFrame.Size = UDim2.new(1, -20, 0, 60)
+BottomFrame.Position = UDim2.new(0, 10, 1, -65)
+BottomFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+BottomFrame.BackgroundTransparency = 0.2
+BottomFrame.BorderSizePixel = 0
+BottomFrame.Parent = MainFrame
+
+local BottomCorner = Instance.new("UICorner")
+BottomCorner.CornerRadius = UDim.new(0, 6)
+BottomCorner.Parent = BottomFrame
+
+-- Информация о выбранном игроке
+local SelectedInfoLabel = Instance.new("TextLabel")
+SelectedInfoLabel.Size = UDim2.new(1, -10, 0.5, 0)
+SelectedInfoLabel.Position = UDim2.new(0, 5, 0, 2)
+SelectedInfoLabel.BackgroundTransparency = 1
+SelectedInfoLabel.Text = "Выберите игрока"
+SelectedInfoLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+SelectedInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+SelectedInfoLabel.Font = Enum.Font.GothamBold
+SelectedInfoLabel.TextSize = 14
+SelectedInfoLabel.Parent = BottomFrame
+
+-- Информация о клавише
+local KeyInfoLabel = Instance.new("TextLabel")
+KeyInfoLabel.Size = UDim2.new(1, -10, 0.5, -2)
+KeyInfoLabel.Position = UDim2.new(0, 5, 0.5, 0)
+KeyInfoLabel.BackgroundTransparency = 1
+KeyInfoLabel.Text = "Нажмите H для телепортации дрона"
+KeyInfoLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
+KeyInfoLabel.TextXAlignment = Enum.TextXAlignment.Left
+KeyInfoLabel.Font = Enum.Font.Gotham
+KeyInfoLabel.TextSize = 12
+KeyInfoLabel.Parent = BottomFrame
+
+-- Функция для поиска дрона
+local function findDrone()
+    local backpack = LocalPlayer:FindFirstChild("Backpack")
+    local character = LocalPlayer.Character
+    
+    -- Ищем в руках
+    if character then
+        local toolInHand = character:FindFirstChild("FPV Drone")
+        if toolInHand and toolInHand:IsA("Tool") then
+            return toolInHand
+        end
+    end
+    
+    -- Ищем в рюкзаке
+    if backpack then
+        local toolInBackpack = backpack:FindFirstChild("FPV Drone")
+        if toolInBackpack and toolInBackpack:IsA("Tool") then
+            return toolInBackpack
+        end
+    end
+    
+    return nil
+end
+
+-- Функция для получения текущего дрона (модели)
+local function getCurrentDroneModel()
+    local droneItem = findDrone()
+    if not droneItem or not droneItem:FindFirstChild("CURRENTDRONE") then
+        return nil
+    end
+    
+    local success, value = pcall(function()
+        return droneItem.CURRENTDRONE.Value
+    end)
+    
+    return success and value or nil
+end
+
+-- Функция телепортации дрона
+local function teleportDroneToSelectedPlayer()
+    if not selectedPlayer then
+        SelectedInfoLabel.Text = "❌ Сначала выберите игрока!"
+        return false
+    end
+    
+    if selectedPlayer == LocalPlayer then
+        SelectedInfoLabel.Text = "❌ Нельзя телепортироваться к себе!"
+        return false
+    end
+    
+    local drone = getCurrentDroneModel()
+    if not drone then
+        SelectedInfoLabel.Text = "❌ Дрон не найден (заспавньте дрон)"
+        return false
+    end
+    
+    local targetChar = selectedPlayer.Character
+    if not targetChar or not targetChar:FindFirstChild("HumanoidRootPart") then
+        SelectedInfoLabel.Text = "❌ Игрок не имеет персонажа"
+        return false
+    end
+    
+    local targetPosition = targetChar.HumanoidRootPart.Position
+    local dronePrimaryPart = drone.PrimaryPart
+    
+    if not dronePrimaryPart then
+        SelectedInfoLabel.Text = "❌ Дрон поврежден"
+        return false
+    end
+    
+    -- Эффект телепортации
+    SelectedInfoLabel.Text = "✨ Телепортация к " .. selectedPlayer.Name .. "..."
+    
+    -- Телепортируем дрон
+    drone:SetPrimaryPartCFrame(CFrame.new(targetPosition + Vector3.new(0, 5, 0)))
+    
+    -- Обновляем FlightVelocity если есть
+    local flightVelocity = dronePrimaryPart:FindFirstChild("FlightVelocity")
+    if flightVelocity then
+        pcall(function()
+            flightVelocity.Velocity = Vector3.new(0, 0, 0)
+        end)
+    end
+    
+    SelectedInfoLabel.Text = "✅ Дрон у " .. selectedPlayer.Name
+    
+    -- Визуальный эффект (мигание)
+    coroutine.wrap(function()
+        for i = 1, 3 do
+            dronePrimaryPart.Transparency = 0.5
+            wait(0.1)
+            dronePrimaryPart.Transparency = 0
+            wait(0.1)
+        end
+    end)()
+    
+    return true
+end
+
+-- Обработка нажатия клавиши H
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.KeyCode == teleportKey then
+        teleportDroneToSelectedPlayer()
+    end
+end)
+
+-- Функция обновления списка игроков
+local function updatePlayersList()
+    -- Очищаем панель
+    for _, child in pairs(PlayersPanel:GetChildren()) do
+        if child:IsA("Frame") and child.Name ~= "Placeholder" then
+            child:Destroy()
+        end
+    end
+    
+    local yOffset = 0
+    local playerCount = 0
+    
+    -- Создаем кнопки для каждого игрока
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            playerCount = playerCount + 1
+            
+            -- Контейнер для игрока
+            local PlayerFrame = Instance.new("Frame")
+            PlayerFrame.Name = player.Name
+            PlayerFrame.Size = UDim2.new(1, -10, 0, 60)
+            PlayerFrame.Position = UDim2.new(0, 5, 0, yOffset)
+            PlayerFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+            PlayerFrame.BackgroundTransparency = 0.2
+            PlayerFrame.BorderSizePixel = 0
+            PlayerFrame.Parent = PlayersPanel
+            
+            local FrameCorner = Instance.new("UICorner")
+            FrameCorner.CornerRadius = UDim.new(0, 6)
+            FrameCorner.Parent = PlayerFrame
+            
+            -- Аватар (цветной круг с буквой)
+            local AvatarLabel = Instance.new("TextLabel")
+            AvatarLabel.Size = UDim2.new(0, 40, 0, 40)
+            AvatarLabel.Position = UDim2.new(0, 10, 0.5, -20)
+            AvatarLabel.BackgroundColor3 = Color3.fromHSV(player.UserId % 100 / 100, 0.7, 0.7)
+            AvatarLabel.Text = string.sub(player.Name, 1, 2):upper()
+            AvatarLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            AvatarLabel.TextSize = 16
+            AvatarLabel.Font = Enum.Font.GothamBold
+            AvatarLabel.Parent = PlayerFrame
+            
+            local AvatarCorner = Instance.new("UICorner")
+            AvatarCorner.CornerRadius = UDim.new(1, 0)
+            AvatarCorner.Parent = AvatarLabel
+            
+            -- Имя игрока
+            local NameLabel = Instance.new("TextLabel")
+            NameLabel.Size = UDim2.new(1, -140, 0, 20)
+            NameLabel.Position = UDim2.new(0, 60, 0.3, -10)
+            NameLabel.BackgroundTransparency = 1
+            NameLabel.Text = player.Name
+            NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            NameLabel.TextXAlignment = Enum.TextXAlignment.Left
+            NameLabel.Font = Enum.Font.GothamBold
+            NameLabel.TextSize = 14
+            NameLabel.Parent = PlayerFrame
+            
+            -- Статус (здоровье)
+            local HealthLabel = Instance.new("TextLabel")
+            HealthLabel.Size = UDim2.new(1, -140, 0, 20)
+            HealthLabel.Position = UDim2.new(0, 60, 0.6, -10)
+            HealthLabel.BackgroundTransparency = 1
+            HealthLabel.Text = "❤️ HP: ?"
+            HealthLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+            HealthLabel.TextXAlignment = Enum.TextXAlignment.Left
+            HealthLabel.Font = Enum.Font.Gotham
+            HealthLabel.TextSize = 12
+            HealthLabel.Parent = PlayerFrame
+            
+            -- Кнопка выбора
+            local SelectButton = Instance.new("TextButton")
+            SelectButton.Size = UDim2.new(0, 70, 0, 40)
+            SelectButton.Position = UDim2.new(1, -80, 0.5, -20)
+            SelectButton.BackgroundColor3 = Color3.fromRGB(70, 130, 200)
+            SelectButton.Text = "ВЫБРАТЬ"
+            SelectButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            SelectButton.TextSize = 11
+            SelectButton.Font = Enum.Font.GothamBold
+            SelectButton.Parent = PlayerFrame
+            
+            local ButtonCorner = Instance.new("UICorner")
+            ButtonCorner.CornerRadius = UDim.new(0, 4)
+            ButtonCorner.Parent = SelectButton
+            
+            -- Обновление здоровья в реальном времени
+            coroutine.wrap(function()
+                while PlayerFrame and player.Parent do
+                    local char = player.Character
+                    
+                    -- Проверяем жив ли игрок
+                    if char and char:FindFirstChild("Humanoid") then
+                        local humanoid = char.Humanoid
+                        local health = math.floor(humanoid.Health)
+                        local maxHealth = humanoid.MaxHealth
+                        
+                        -- Проверяем на отрицательное здоровье или смерть
+                        if health <= 0 or humanoid:GetState() == Enum.HumanoidStateType.Dead then
+                            HealthLabel.Text = "✖️ 0 HP (убит)"
+                            HealthLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+                        else
+                            local percent = (health / maxHealth) * 100
+                            
+                            HealthLabel.Text = string.format("❤️ HP: %d (%.0f%%)", health, percent)
+                            
+                            if percent < 30 then
+                                HealthLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+                            elseif percent < 70 then
+                                HealthLabel.TextColor3 = Color3.fromRGB(255, 255, 100)
+                            else
+                                HealthLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
+                            end
+                        end
+                    else
+                        -- Если персонажа нет - он мертв
+                        HealthLabel.Text = "✖️ 0 HP (убит)"
+                        HealthLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+                    end
+                    wait(0.5)
+                end
+            end)()
+            
+            -- Эффекты наведения на кнопку
+            SelectButton.MouseEnter:Connect(function()
+                SelectButton.BackgroundColor3 = Color3.fromRGB(100, 150, 250)
+            end)
+            
+            SelectButton.MouseLeave:Connect(function()
+                if selectedPlayer == player then
+                    SelectButton.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+                else
+                    SelectButton.BackgroundColor3 = Color3.fromRGB(70, 130, 200)
+                end
+            end)
+            
+            -- Клик по кнопке выбора
+            SelectButton.MouseButton1Click:Connect(function()
+                selectedPlayer = player
+                SelectedInfoLabel.Text = "🎯 Цель: " .. player.Name
+                
+                -- Подсвечиваем выбранного игрока
+                for _, frame in pairs(PlayersPanel:GetChildren()) do
+                    if frame:IsA("Frame") then
+                        local btn = frame:FindFirstChild("SelectButton")
+                        if btn then
+                            if frame.Name == player.Name then
+                                frame.BackgroundColor3 = Color3.fromRGB(50, 80, 120)
+                                btn.BackgroundColor3 = Color3.fromRGB(50, 200, 50)
+                                btn.Text = "ВЫБРАН"
+                            else
+                                frame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+                                btn.BackgroundColor3 = Color3.fromRGB(70, 130, 200)
+                                btn.Text = "ВЫБРАТЬ"
+                            end
+                        end
+                    end
+                end
+            end)
+            
+            yOffset = yOffset + 65
+        end
+    end
+    
+    -- Если нет других игроков
+    if playerCount == 0 then
+        local NoPlayersLabel = Instance.new("TextLabel")
+        NoPlayersLabel.Size = UDim2.new(1, -20, 0, 50)
+        NoPlayersLabel.Position = UDim2.new(0, 10, 0, 10)
+        NoPlayersLabel.BackgroundTransparency = 1
+        NoPlayersLabel.Text = "Нет других игроков"
+        NoPlayersLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+        NoPlayersLabel.TextSize = 14
+        NoPlayersLabel.Font = Enum.Font.Gotham
+        NoPlayersLabel.Parent = PlayersPanel
+    end
+    
+    -- Обновляем размер Canvas
+    PlayersPanel.CanvasSize = UDim2.new(0, 0, 0, yOffset + 10)
+end
+
+-- Обновление списка при добавлении/удалении игроков
+Players.PlayerAdded:Connect(updatePlayersList)
+Players.PlayerRemoving:Connect(updatePlayersList)
+
+-- Кнопка обновления списка
+local RefreshButton = Instance.new("TextButton")
+RefreshButton.Size = UDim2.new(0, 60, 0, 25)
+RefreshButton.Position = UDim2.new(1, -70, 0, 2.5)
+RefreshButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+RefreshButton.Text = "reload"
+RefreshButton.TextColor3 = Color3.fromRGB(200, 200, 200)
+RefreshButton.TextSize = 16
+RefreshButton.Font = Enum.Font.GothamBold
+RefreshButton.Parent = TitleFrame
+
+local RefreshCorner = Instance.new("UICorner")
+RefreshCorner.CornerRadius = UDim.new(0, 4)
+RefreshCorner.Parent = RefreshButton
+
+RefreshButton.MouseEnter:Connect(function()
+    RefreshButton.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
+end)
+
+RefreshButton.MouseLeave:Connect(function()
+    RefreshButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+end)
+
+RefreshButton.MouseButton1Click:Connect(function()
+    updatePlayersList()
+    KeyInfoLabel.Text = "✅ Список обновлен"
+    wait(1)
+    KeyInfoLabel.Text = "Нажмите H для телепортации дрона"
+end)
+
+UserInputService.InputBegan:Connect(function(bob)
+    if bob.KeyCode == Enum.KeyCode.LeftControl then
+            MainFrame.Visible = not MainFrame.Visible
+        if MainFrame.Visible then
+            KeyInfoLabel.Text = "Нажмите H для телепортации дрона, Ctrl для скрытия"
+        else
+            KeyInfoLabel.Text = "GUI скрыто (нажмите Ctrl)"
+        end
+    end
+
+end)
+-- Инициализация
+updatePlayersList()
+
+print("=== Drone Teleport GUI [H] загружен ===")
+print("✓ Выберите игрока в списке")
+print("✓ Нажмите H для телепортации дрона (даже в режиме управления)")
+print("✓ Отображение здоровья в реальном времени")
+print("✓ Мертвые игроки отображаются с ✖️ и 0 HP")
+print("✓ Нажмите Ctrl для скрытия/показа окна")
+   end
+})
