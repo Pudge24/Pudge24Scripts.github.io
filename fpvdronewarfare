@@ -103,28 +103,87 @@ local Button = MainTab:CreateButton({
 
 local ExpTab = Window:CreateTab("Exploits", nil) -- Title, Image
 
+
+
+
+-- Слайдер для количества пуль
+local PelletsSlider = ExpTab:CreateSlider({
+   Name = "Shotgun pellets count",
+   Range = {1, 75},
+   Increment = 1,
+   Suffix = "pellets",
+   CurrentValue = 15,
+   Flag = "shotgun_pellets",
+   Callback = function(Value)
+        _G.shotgunPellets = Value
+        print("Pellets count set to: " .. Value)
+   end,
+})
+
+-- Слайдер для разброса пуль (расстояние между ними)
+local SpreadSlider = ExpTab:CreateSlider({
+   Name = "Bullet spread distance",
+   Range = {0, 10},  -- 0 = идеальная точность, 5 = большой разброс
+   Increment = 0.1,
+   Suffix = "spread",
+   CurrentValue = 0.8,  -- Увеличенное значение для большего расстояния между пулями
+   Flag = "shotgun_spread",
+   Callback = function(Value)
+        _G.shotgunSpread = Value
+        print("Spread set to: " .. Value)
+   end,
+})
+
+-- Кнопка для активации мега-дробовика
 local Button = ExpTab:CreateButton({
-   Name = "Mega gun(take a gun in hands)",
+   Name = "Mega shotgun (take a gun in hands)",
    Callback = function()
-     local tool =  player.Character:FindFirstChildOfClass("Tool")
+     local player = game:GetService("Players").LocalPlayer
+     local tool = player.Character:FindFirstChildOfClass("Tool")
+     
      if tool then
-      local folder = tool:FindFirstChild("SPH_Weapon")
-      if folder then
-         local module = require(folder.WeaponStats)
+        local folder = tool:FindFirstChild("SPH_Weapon")
+        if folder then
+            local module = require(folder.WeaponStats)
+            
+            -- Основные улучшения
             module.fireRate = 1500
             module.startAmmoPool = 999999999999999
             module.maxAmmoPool = 999999999999999
+            module.reloadSpeedModifier = 10000
+            module.infiniteAmmo = true
+            
+            -- Убираем отдачу
             module.recoil.vertical = 0
             module.recoil.horizontal = 0
             module.recoil.camShake = 0
             module.gunRecoil.vertical = 0
             module.gunRecoil.horizontal = 0
             module.gunRecoil.punchMultiplier = 0
-            module.reloadSpeedModifier = 10000
-            module.infiniteAmmo = true
-
-
-      end
+            
+            -- ВКЛЮЧАЕМ РЕЖИМ ДРОБОВИКА С УВЕЛИЧЕННЫМ РАССТОЯНИЕМ
+            module.shotgun = true
+            module.shotgunPellets = _G.shotgunPellets or 15
+            module.spread = _G.shotgunSpread or 0.8  -- Увеличенный разброс для большего расстояния между пулями
+            
+            -- Дополнительный параметр для контроля разброса (если есть)
+            if module.shotgunSpread then
+                module.shotgunSpread = _G.shotgunSpread * 2 or 1.6  -- Увеличиваем еще больше
+            end
+            
+            -- Увеличиваем урон
+            module.damage = {
+                ["Head"] = 200,
+                ["Torso"] = 100,
+                ["Other"] = 75
+            }
+            
+            print("Mega Shotgun activated! Pellets: " .. module.shotgunPellets .. ", Spread: " .. module.spread)
+        else
+            print("SPH_Weapon not found!")
+        end
+     else
+        print("No tool in hands!")
      end
    end
 })
