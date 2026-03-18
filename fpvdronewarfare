@@ -123,7 +123,7 @@ local PelletsSlider = ExpTab:CreateSlider({
 -- Слайдер для разброса пуль (расстояние между ними)
 local SpreadSlider = ExpTab:CreateSlider({
    Name = "Bullet spread distance",
-   Range = {0, 10},  -- 0 = идеальная точность, 5 = большой разброс
+   Range = {0, 5},  -- 0 = идеальная точность, 5 = большой разброс
    Increment = 0.1,
    Suffix = "spread",
    CurrentValue = 0.8,  -- Увеличенное значение для большего расстояния между пулями
@@ -175,7 +175,7 @@ local Button = ExpTab:CreateButton({
             module.damage = {
                 ["Head"] = 200,
                 ["Torso"] = 100,
-                ["Other"] = 75
+                ["Other"] = 100
             }
             
             print("Mega Shotgun activated! Pellets: " .. module.shotgunPellets .. ", Spread: " .. module.spread)
