@@ -217,6 +217,7 @@ end)
 
 
 game.Players.LocalPlayer.Character.HumanoidRootPart:WaitForChild("FogParticle"):Destroy()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Pudge24/Pudge24Scripts.github.io/refs/heads/main/speedhack"))()
 
 
 print("[Скрипт] Отслеживание партов активировано!")
