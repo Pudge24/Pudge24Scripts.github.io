@@ -2,6 +2,40 @@
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
+task.spawn(function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Pudge24/Pudge24Scripts.github.io/refs/heads/main/speedhack"))()
+end)
+
+-- Список ключевых слов для отслеживания (в нижнем регистре для сравнения)
+local keywords2 = {"pandemonium", "pipsqueak", "monium", "pande", "onium"}
+
+-- Функция проверки, содержит ли название парта нужные ключевые слова (без учёта регистра)
+local function containsKeyword2(partName)
+    if not partName or partName == "" then
+        return false
+    end
+    
+    local lowerName = string.lower(partName)
+    print("[Отладка] Проверка названия: " .. partName .. " -> " .. lowerName)
+    
+    for _, keyword in ipairs(keywords2) do
+        if string.find(lowerName, keyword, 1, true) then -- true = обычный поиск без паттернов
+            print("[Отладка] Найдено совпадение! Ключевое слово: " .. keyword)
+            return true
+        end
+    end
+    
+    print("[Отладка] Совпадений не найдено")
+    return false
+end
+
+workspace.ChildAdded:Connect(function (child)
+if containsKeyword2(child.Name) then
+ task.wait(0.5)
+ child:Destroy()
+end
+end)
+
 -- Список ключевых слов для отслеживания (в нижнем регистре для сравнения)
 local keywords = {"pinkie", "froger", "pandemonium", "blitz", "chainsmoker", "pipsqueak", "monium", "pande", "onium", "bleach", "a-60", "a-200", "the smiley one", "thesmileyone", "a60", "a200"}
 
@@ -186,20 +220,7 @@ end
 end)
 
 task.wait(3)
-workspace.GameplayFolder.Rooms.ChildAdded:Connect(function (child)
-task.wait(0.05)
-for _, v in child:GetChildren() do
- if v.Name == "Landmine" then
- local bob = Instance.new("Highlight")
-bob.Parent = v
-for _, part in v:GetChildren() do
-if part:IsA("BasePart") then
-part.Transparency = 0
-end
-end
-end
-end
-end)
+
 
 
 
@@ -217,7 +238,7 @@ end)
 
 
 game.Players.LocalPlayer.Character.HumanoidRootPart:WaitForChild("FogParticle"):Destroy()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Pudge24/Pudge24Scripts.github.io/refs/heads/main/speedhack"))()
+
 
 
 print("[Скрипт] Отслеживание партов активировано!")
