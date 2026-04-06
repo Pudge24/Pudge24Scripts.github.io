@@ -1,0 +1,194 @@
+--[[
+    SPEED HACK SCRIPT
+    Работает через BodyVelocity в HRP
+    Кнопки: W, A, S, D
+    GUI можно двигать, менять скорость и закрыть
+--]]
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
+local runService = game:GetService("RunService")
+local userInputService = game:GetService("UserInputService")
+
+-- Переменные
+local speed = 50  -- скорость по умолчанию
+local moveDirection = Vector3.new(0, 0, 0)
+local bodyVelocity = nil
+
+-- Функция создания BodyVelocity
+local function createBodyVelocity()
+    if bodyVelocity then bodyVelocity:Destroy() end
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.MaxForce = Vector3.new(1e6, 0, 1e6)
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.Parent = hrp
+end
+
+-- Функция обновления скорости
+local function updateVelocity()
+    if not bodyVelocity then return end
+    local camera = workspace.CurrentCamera
+    local forwardVec = camera.CFrame.LookVector
+    local rightVec = camera.CFrame.RightVector
+    
+    -- Убираем влияние по вертикали (двигаем только по X и Z)
+    forwardVec = Vector3.new(forwardVec.X, 0, forwardVec.Z).Unit
+    rightVec = Vector3.new(rightVec.X, 0, rightVec.Z).Unit
+    
+    local move = Vector3.new(0, 0, 0)
+    if moveDirection.Z > 0 then move = move + forwardVec end      -- W
+    if moveDirection.Z < 0 then move = move - forwardVec end      -- S
+    if moveDirection.X > 0 then move = move + rightVec end        -- D
+    if moveDirection.X < 0 then move = move - rightVec end        -- A
+    
+    if move.Magnitude > 0 then
+        move = move.Unit * speed
+    end
+    
+    bodyVelocity.Velocity = move
+end
+
+-- Управление клавишами
+userInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    local key = input.KeyCode
+    if key == Enum.KeyCode.W then moveDirection = Vector3.new(moveDirection.X, 0, 1)
+    elseif key == Enum.KeyCode.S then moveDirection = Vector3.new(moveDirection.X, 0, -1)
+    elseif key == Enum.KeyCode.A then moveDirection = Vector3.new(-1, 0, moveDirection.Z)
+    elseif key == Enum.KeyCode.D then moveDirection = Vector3.new(1, 0, moveDirection.Z)
+    end
+    updateVelocity()
+end)
+
+userInputService.InputEnded:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    local key = input.KeyCode
+    if key == Enum.KeyCode.W and moveDirection.Z == 1 then moveDirection = Vector3.new(moveDirection.X, 0, 0)
+    elseif key == Enum.KeyCode.S and moveDirection.Z == -1 then moveDirection = Vector3.new(moveDirection.X, 0, 0)
+    elseif key == Enum.KeyCode.A and moveDirection.X == -1 then moveDirection = Vector3.new(0, 0, moveDirection.Z)
+    elseif key == Enum.KeyCode.D and moveDirection.X == 1 then moveDirection = Vector3.new(0, 0, moveDirection.Z)
+    end
+    updateVelocity()
+end)
+
+-- Ожидание персонажа
+player.CharacterAdded:Connect(function(newChar)
+    character = newChar
+    hrp = character:WaitForChild("HumanoidRootPart")
+    humanoid = character:WaitForChild("Humanoid")
+    createBodyVelocity()
+end)
+
+-- Создание GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "SpeedHackGUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local mainFrame = Instance.new("Frame")
+mainFrame.Size = UDim2.new(0, 200, 0, 120)
+mainFrame.Position = UDim2.new(0.5, -100, 0.5, -60)
+mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+mainFrame.BackgroundTransparency = 0.1
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
+
+-- Закругление углов (для красоты)
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 8)
+corner.Parent = mainFrame
+
+-- Заголовок
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 30)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+title.BackgroundTransparency = 0.2
+title.Text = "Speed Hack"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.GothamBold
+title.TextSize = 18
+title.Parent = mainFrame
+
+local titleCorner = Instance.new("UICorner")
+titleCorner.CornerRadius = UDim.new(0, 8)
+titleCorner.Parent = title
+
+-- Кнопка закрыть
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -30, 0, 0)
+closeBtn.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.TextSize = 16
+closeBtn.BorderSizePixel = 0
+closeBtn.Parent = title
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeBtn
+
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+    if bodyVelocity then bodyVelocity:Destroy() end
+end)
+
+-- Ползунок скорости
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(0.8, 0, 0, 25)
+speedLabel.Position = UDim2.new(0.1, 0, 0.35, 0)
+speedLabel.BackgroundTransparency = 1
+speedLabel.Text = "Speed: " .. speed
+speedLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+speedLabel.Font = Enum.Font.Gotham
+speedLabel.TextSize = 14
+speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+speedLabel.Parent = mainFrame
+
+local slider = Instance.new("TextBox")
+slider.Size = UDim2.new(0.8, 0, 0, 30)
+slider.Position = UDim2.new(0.1, 0, 0.55, 0)
+slider.BackgroundColor3 = Color3.fromRGB(60, 60, 80)
+slider.Text = tostring(speed)
+slider.TextColor3 = Color3.fromRGB(255, 255, 255)
+slider.Font = Enum.Font.Gotham
+slider.TextSize = 16
+slider.PlaceholderText = "Speed value"
+slider.Parent = mainFrame
+
+local sliderCorner = Instance.new("UICorner")
+sliderCorner.CornerRadius = UDim.new(0, 6)
+sliderCorner.Parent = slider
+
+slider.FocusLost:Connect(function(enterPressed)
+    local newSpeed = tonumber(slider.Text)
+    if newSpeed and newSpeed > 0 then
+        speed = newSpeed
+        speedLabel.Text = "Speed: " .. speed
+        updateVelocity()
+    else
+        slider.Text = tostring(speed)
+    end
+end)
+
+-- Запуск
+createBodyVelocity()
+
+-- Обновление скорости каждый кадр (для плавности)
+runService.RenderStepped:Connect(function()
+    if not bodyVelocity or not hrp or not hrp.Parent then return end
+    updateVelocity()
+end)
+
+-- Отключаем при падении/прыжке (опционально)
+humanoid.StateChanged:Connect(function(oldState, newState)
+    if newState == Enum.HumanoidStateType.Jumping or newState == Enum.HumanoidStateType.Freefall then
+        if bodyVelocity then bodyVelocity.Velocity = Vector3.new(0, 0, 0) end
+    end
+end)
