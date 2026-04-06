@@ -46,6 +46,11 @@ local function createNotification(partName)
     frame.BorderSizePixel = 2
     frame.BorderColor3 = Color3.fromRGB(255, 100, 150)
     frame.Parent = screenGui
+
+    local sound = game:GetService("ReplicatedStorage").Sounds.Mod_ButtonEnd:Clone()
+    sound.Parent = workspace
+    sound:Play()
+
     
     -- Скругление углов
     local uiCorner = Instance.new("UICorner")
@@ -196,7 +201,7 @@ end)
 
 
 game.Players.LocalPlayer.PlayerGui.Main.Popups.ChildAdded:Connect(function (bob)
-task.wait(0.05)
+task.wait(0.1)
     bob:Destroy()
 end)
 
