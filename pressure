@@ -205,6 +205,12 @@ task.wait(0.1)
     bob:Destroy()
 end)
 
+workspace.GameplayFolder.Rooms.ChildAdded:Connect(function (room)
+task.wait(0.05)
+    if room.Name == "BigHolePipeClimbthru" then
+    createNotification("ДЫРКА!!!!!!!!!!!!!!!!!!!!!!!!")
+    end
+end)
 
 
 game.Players.LocalPlayer.Character.HumanoidRootPart:WaitForChild("FogParticle"):Destroy()
