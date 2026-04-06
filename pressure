@@ -187,15 +187,18 @@ end)
 
 task.wait(3)
 workspace.GameplayFolder.Rooms.ChildAdded:Connect(function (child)
-    child.ChildAdded:Connect(function (mine)
-        if mine.Name == "Landmine" then
-        mine.PrimaryPart.Transparency = 0
-        mine.glow.Transparency = 0
-        mine.PartOne.Transparency = 0
-        mine.PartTwo.Transparency = 0
-        local b = Instance.new("Highlight", mine)
-        end
-    end)
+task.wait(0.05)
+for _, v in child:GetChildren() do
+ if v.Name == "Landmine" then
+ local bob = Instance.new("Highlight")
+bob.Parent = v
+for _, part in v:GetChildren() do
+if part:IsA("BasePart") then
+part.Transparency = 0
+end
+end
+end
+end
 end)
 
 
