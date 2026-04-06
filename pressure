@@ -1,10 +1,24 @@
 -- Локальный скрипт (поместите в StarterPlayerScripts или StarterGui)
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+local Lighting = game.Lighting
 
 task.spawn(function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Pudge24/Pudge24Scripts.github.io/refs/heads/main/speedhack"))()
 end)
+
+	game.Lighting.FogEnd = 100000
+	for i,v in pairs(Lighting:GetDescendants()) do
+		if v:IsA("Atmosphere") then
+			v:Destroy()
+		end
+	end
+
+	Lighting.Brightness = 2
+	Lighting.ClockTime = 14
+	Lighting.FogEnd = 100000
+	Lighting.GlobalShadows = false
+	Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
 
 -- Список ключевых слов для отслеживания (в нижнем регистре для сравнения)
 local keywords2 = {"pandemonium", "pipsqueak", "monium", "pande", "onium"}
