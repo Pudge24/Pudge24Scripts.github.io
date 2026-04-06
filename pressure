@@ -196,6 +196,7 @@ end)
 
 
 game.Players.LocalPlayer.PlayerGui.Main.Popups.ChildAdded:Connect(function (bob)
+task.wait(0.1)
     bob:Destroy()
 end)
 
