@@ -1,0 +1,209 @@
+-- Локальный скрипт (поместите в StarterPlayerScripts или StarterGui)
+local player = game.Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Список ключевых слов для отслеживания (в нижнем регистре для сравнения)
+local keywords = {"pinkie", "froger", "pandemonium", "blitz", "chainsmoker", "pipsqueak", "monium", "pande", "onium", "bleach", "a-60", "a-200", "the smiley one", "thesmileyone", "a60", "a200"}
+
+-- Функция проверки, содержит ли название парта нужные ключевые слова (без учёта регистра)
+local function containsKeyword(partName)
+    if not partName or partName == "" then
+        return false
+    end
+    
+    local lowerName = string.lower(partName)
+    print("[Отладка] Проверка названия: " .. partName .. " -> " .. lowerName)
+    
+    for _, keyword in ipairs(keywords) do
+        if string.find(lowerName, keyword, 1, true) then -- true = обычный поиск без паттернов
+            print("[Отладка] Найдено совпадение! Ключевое слово: " .. keyword)
+            return true
+        end
+    end
+    
+    print("[Отладка] Совпадений не найдено")
+    return false
+end
+
+-- Функция создания GUI уведомления
+local function createNotification(partName)
+    print("[Уведомление] Создаём уведомление для парта: " .. partName)
+    
+    -- Создаём ScreenGui
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "NotificationGui_" .. partName
+    screenGui.Parent = playerGui
+    screenGui.IgnoreGuiInset = true
+    screenGui.ResetOnSpawn = false
+    
+    -- Создаём Frame (окошко)
+    local frame = Instance.new("Frame")
+    frame.Name = "NotificationFrame"
+    frame.Size = UDim2.new(0, 300, 0, 70)
+    frame.Position = UDim2.new(1, -300, 0, 25)
+    frame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    frame.BackgroundTransparency = 0.15
+    frame.BorderSizePixel = 2
+    frame.BorderColor3 = Color3.fromRGB(255, 100, 150)
+    frame.Parent = screenGui
+    
+    -- Скругление углов
+    local uiCorner = Instance.new("UICorner")
+    uiCorner.CornerRadius = UDim.new(0, 8)
+    uiCorner.Parent = frame
+    
+    -- Анимация появления
+    frame.BackgroundTransparency = 1
+    frame.Position = UDim2.new(1, -100, 0, 10)
+    frame:TweenPosition(UDim2.new(1, -320, 0, 100), Enum.EasingDirection.Out, Enum.EasingStyle.Back, 0.4, true)
+    frame:TweenSize(UDim2.new(0, 300, 0, 70), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.3, true)
+    frame.BackgroundTransparency = 0.15
+    
+    -- Иконка
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Name = "IconLabel"
+    iconLabel.Size = UDim2.new(0, 40, 1, 0)
+    iconLabel.Position = UDim2.new(0, 5, 0, 0)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Text = "👨🏿"
+    iconLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    iconLabel.TextSize = 30
+    iconLabel.TextXAlignment = Enum.TextXAlignment.Center
+    iconLabel.Font = Enum.Font.GothamBold
+    iconLabel.Parent = frame
+    
+    -- Текст "Новый парт!"
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Name = "TitleLabel"
+    titleLabel.Size = UDim2.new(1, -60, 0, 25)
+    titleLabel.Position = UDim2.new(0, 50, 0, 5)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.TextColor3 = Color3.fromRGB(255, 200, 100)
+    titleLabel.Text = "Пидорас"
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.TextSize = 14
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.Parent = frame
+    
+    -- Название парта
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Name = "PartNameLabel"
+    nameLabel.Size = UDim2.new(1, -60, 0, 30)
+    nameLabel.Position = UDim2.new(0, 50, 0, 30)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    nameLabel.Text = partName
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.TextSize = 16
+    nameLabel.Font = Enum.Font.Gotham
+    nameLabel.TextWrapped = true
+    nameLabel.Parent = frame
+    
+    -- Кнопка закрытия
+    local closeButton = Instance.new("TextButton")
+    closeButton.Name = "CloseButton"
+    closeButton.Size = UDim2.new(0, 25, 0, 25)
+    closeButton.Position = UDim2.new(1, -30, 0, 5)
+    closeButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+    closeButton.BackgroundTransparency = 0.3
+    closeButton.Text = "✕"
+    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeButton.TextSize = 16
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.Parent = frame
+    
+    -- Скругление для кнопки
+    local buttonCorner = Instance.new("UICorner")
+    buttonCorner.CornerRadius = UDim.new(1, 0)
+    buttonCorner.Parent = closeButton
+    
+    -- Эффект наведения
+    closeButton.MouseEnter:Connect(function()
+        closeButton.BackgroundTransparency = 0
+    end)
+    
+    closeButton.MouseLeave:Connect(function()
+        closeButton.BackgroundTransparency = 0.3
+    end)
+    
+    -- Функция удаления уведомления
+    local function deleteNotification()
+        frame:TweenPosition(UDim2.new(1, -100, 0, 10), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.3, true)
+        frame:TweenSize(UDim2.new(0, 0, 0, 70), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.3, true)
+        task.wait(0.35)
+        if screenGui and screenGui.Parent then
+            screenGui:Destroy()
+        end
+    end
+    
+    -- Закрытие по кнопке
+    closeButton.MouseButton1Click:Connect(function()
+        deleteNotification()
+    end)
+    
+    -- Автоматическое закрытие через 5 секунд
+    task.delay(5, function()
+        if screenGui and screenGui.Parent then
+            deleteNotification()
+        end
+    end)
+end
+
+-- Основная функция отслеживания новых объектов в workspace
+workspace.ChildAdded:Connect(function(child)
+    print("[Отслеживание] Новый объект добавлен: " .. child.Name .. " (" .. child.ClassName .. ")")
+    
+    -- Небольшая задержка, чтобы объект полностью инициализировался
+    task.wait(0.05)
+    
+    -- Проверяем, является ли объект партом
+    if child:IsA("BasePart") and child.ClassName ~= "Terrain" then
+        print("[Отслеживание] Обнаружен парт: " .. child.Name)
+        
+        -- Получаем имя парта
+        local partName = child.Name
+        
+        -- Проверяем, содержит ли название парта нужные ключевые слова
+        if containsKeyword(partName) then
+           child.Transparency = 0
+            local bob = Instance.new("Highlight", child)
+            createNotification(partName)
+        else
+            print("[Пропущено] Парт '" .. partName .. "' не подходит по условию")
+        end
+    end
+end)
+
+workspace.ChildAdded:Connect(function(b)
+if b.Name == "FriendPart" then
+b:Destroy()
+end
+end)
+
+task.wait(3)
+workspace.GameplayFolder.Rooms.ChildAdded:Connect(function (child)
+    child.ChildAdded:Connect(function (mine)
+        if mine.Name == "Landmine" then
+        mine.PrimaryPart.Transparency = 0
+        mine.glow.Transparency = 0
+        mine.PartOne.Transparency = 0
+        mine.PartTwo.Transparency = 0
+        local b = Instance.new("Highlight", mine)
+        end
+    end)
+end)
+
+
+
+game.Players.LocalPlayer.PlayerGui.Main.Popups.ChildAdded:Connect(function (bob)
+    bob:Destroy()
+end)
+
+
+
+game.Players.LocalPlayer.Character.HumanoidRootPart:WaitForChild("FogParticle"):Destroy()
+
+
+print("[Скрипт] Отслеживание партов активировано!")
+print("[Скрипт] Отслеживаемые ключевые слова: " .. table.concat(keywords, ", "))
+print("[Скрипт] Регистр не учитывается")
