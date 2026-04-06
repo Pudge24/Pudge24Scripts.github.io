@@ -227,6 +227,23 @@ workspace.ChildAdded:Connect(function(child)
     end
 end)
 
+game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main").HotPotatoWarning.Changed:Connect(function (bob)
+    if bob == "Visible" then
+        if game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("Main").HotPotatoWarning.Visible then
+        local args = {
+	true
+}
+game:GetService("ReplicatedStorage"):WaitForChild("CrouchEvent"):FireServer(unpack(args))
+task.wait(0.05)
+local args = {
+	false
+}
+game:GetService("ReplicatedStorage"):WaitForChild("CrouchEvent"):FireServer(unpack(args))
+
+        end
+    end
+end)
+
 workspace.ChildAdded:Connect(function(b)
 if b.Name == "FriendPart" then
 b:Destroy()
