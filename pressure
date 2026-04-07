@@ -159,7 +159,7 @@ local function createNotification(partName)
     closeButton.Position = UDim2.new(1, -30, 0, 5)
     closeButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
     closeButton.BackgroundTransparency = 0.3
-    closeButton.Text = "✕"
+    closeButton.Text = "X"
     closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     closeButton.TextSize = 16
     closeButton.Font = Enum.Font.GothamBold
@@ -250,19 +250,19 @@ b:Destroy()
 end
 end)
 
-task.wait(3)
+task.wait(1)
 
 
 
 
 game.Players.LocalPlayer.PlayerGui.Main.Popups.ChildAdded:Connect(function (bob)
-task.wait(0.1)
+task.wait(0.05)
     bob:Destroy()
 end)
 
 workspace.GameplayFolder.Rooms.ChildAdded:Connect(function (room)
-task.wait(0.05)
-    if room.Name == "BigHolePipeClimbthru" then
+task.wait(0.02)
+    if room.Name == "BigHolePipeClimbthru" or room.Name == "BigHallPit" then
     createNotification("ДЫРКА!!!!!!!!!!!!!!!!!!!!!!!!")
     end
 end)
