@@ -1,4 +1,4 @@
-workspace.GameplayFolder.Monsters:WaitForChild("DiVineRoot").PrimaryPart находится на расстоянии ближе 100 стадов к локальному персонажу, то будет уведомление и если 50 то еще раз
+
 -- Локальный скрипт (поместите в StarterPlayerScripts или StarterGui)
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
