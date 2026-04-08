@@ -1,3 +1,4 @@
+workspace.GameplayFolder.Monsters:WaitForChild("DiVineRoot").PrimaryPart находится на расстоянии ближе 100 стадов к локальному персонажу, то будет уведомление и если 50 то еще раз
 -- Локальный скрипт (поместите в StarterPlayerScripts или StarterGui)
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -7,18 +8,18 @@ task.spawn(function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Pudge24/Pudge24Scripts.github.io/refs/heads/main/speedhack"))()
 end)
 
-game.Lighting.FogEnd = 100000
-for i,v in pairs(Lighting:GetDescendants()) do
-	if v:IsA("Atmosphere") then
-		v:Destroy()
+	game.Lighting.FogEnd = 100000
+	for i,v in pairs(Lighting:GetDescendants()) do
+		if v:IsA("Atmosphere") then
+			v:Destroy()
+		end
 	end
-end
 
-Lighting.Brightness = 2
-Lighting.ClockTime = 14
-Lighting.FogEnd = 100000
-Lighting.GlobalShadows = false
-Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
+	Lighting.Brightness = 2
+	Lighting.ClockTime = 14
+	Lighting.FogEnd = 100000
+	Lighting.GlobalShadows = false
+	Lighting.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
 
 -- Список ключевых слов для отслеживания (в нижнем регистре для сравнения)
 local keywords2 = {"pandemonium", "pipsqueak", "monium", "pande", "onium"}
@@ -98,6 +99,7 @@ local function createNotification(partName)
     local sound = game:GetService("ReplicatedStorage").Sounds.Mod_ButtonEnd:Clone()
     sound.Parent = workspace
     sound:Play()
+
     
     -- Скругление углов
     local uiCorner = Instance.new("UICorner")
@@ -201,73 +203,6 @@ local function createNotification(partName)
     end)
 end
 
--- Функция отслеживания расстояния до DiVineRoot
-local function trackDiVineRootDistance()
-    -- Ждём появления DiVineRoot
-    local divineRoot = workspace.GameplayFolder.Monsters:WaitForChild("DiVineRoot")
-    
-    -- Ждём появления PrimaryPart
-    local primaryPart = divineRoot:WaitForChild("PrimaryPart")
-    
-    print("[DiVineRoot] Найден и отслеживается!")
-    
-    -- Переменные для отслеживания уже показанных уведомлений
-    local notified100 = false
-    local notified50 = false
-    
-    -- Запускаем бесконечный цикл проверки расстояния
-    task.spawn(function()
-        while true do
-            task.wait(0.5) -- Проверяем каждые 0.5 секунды
-            
-            -- Проверяем, существует ли персонаж и его HumanoidRootPart
-            local character = player.Character
-            if not character then continue end
-            
-            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-            if not humanoidRootPart then continue end
-            
-            -- Проверяем, существует ли PrimaryPart
-            if not primaryPart or not primaryPart.Parent then
-                -- Если PrimaryPart исчез, пробуем получить заново
-                primaryPart = divineRoot:FindFirstChild("PrimaryPart")
-                if not primaryPart then
-                    print("[DiVineRoot] PrimaryPart потерян, ожидаем...")
-                    continue
-                end
-            end
-            
-            -- Вычисляем расстояние
-            local distance = (humanoidRootPart.Position - primaryPart.Position).Magnitude
-            
-            -- Переводим в стады (1 стад = 3.5 метров? Если нужно другое значение - измените)
-            local distanceInStads = distance / 3.5
-            
-            -- Проверка на расстояние 100 стадов
-            if distanceInStads <= 100 and not notified100 then
-                notified100 = true
-                print(string.format("[DiVineRoot] Расстояние: %.1f стадов - ДОСТИГНУТО 100!", distanceInStads))
-                createNotification("⚠️ DiVineRoot близко! (100 стадов) ⚠️")
-            end
-            
-            -- Проверка на расстояние 50 стадов
-            if distanceInStads <= 50 and not notified50 then
-                notified50 = true
-                print(string.format("[DiVineRoot] Расстояние: %.1f стадов - ДОСТИГНУТО 50!", distanceInStads))
-                createNotification("🔴 DiVineRoot ОЧЕНЬ БЛИЗКО! (50 стадов) 🔴")
-            end
-            
-            -- Если расстояние снова стало больше, сбрасываем флаги (опционально)
-            if distanceInStads > 100 then
-                notified100 = false
-                notified50 = false
-            elseif distanceInStads > 50 and distanceInStads <= 100 then
-                notified50 = false
-            end
-        end
-    end)
-end
-
 -- Основная функция отслеживания новых объектов в workspace
 workspace.ChildAdded:Connect(function(child)
     print("[Отслеживание] Новый объект добавлен: " .. child.Name .. " (" .. child.ClassName .. ")")
@@ -318,6 +253,9 @@ end)
 
 task.wait(1)
 
+
+
+
 game.Players.LocalPlayer.PlayerGui.Main.Popups.ChildAdded:Connect(function (bob)
 task.wait(0.05)
     bob:Destroy()
@@ -330,14 +268,13 @@ task.wait(0.02)
     end
 end)
 
+
 game.Players.LocalPlayer.Character.HumanoidRootPart:WaitForChild("FogParticle"):Destroy()
 workspace.GameplayFolder.Monsters:WaitForChild("Conundrum"):Destroy()
 workspace:WaitForChild("WitchingHour"):Destroy()
 
--- Запускаем отслеживание расстояния до DiVineRoot
-task.spawn(trackDiVineRootDistance)
+
 
 print("[Скрипт] Отслеживание партов активировано!")
 print("[Скрипт] Отслеживаемые ключевые слова: " .. table.concat(keywords, ", "))
 print("[Скрипт] Регистр не учитывается")
-print("[Скрипт] Отслеживание DiVineRoot активировано!")
