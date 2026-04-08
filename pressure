@@ -270,6 +270,7 @@ end)
 
 game.Players.LocalPlayer.Character.HumanoidRootPart:WaitForChild("FogParticle"):Destroy()
 workspace.GameplayFolder.Monsters:WaitForChild("Conundrum"):Destroy()
+workspace:WaitForChild("WitchingHour"):Destroy()
 
 
 
